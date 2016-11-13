@@ -140,73 +140,73 @@ import java.util.HashMap;
                 RoadDescription road = new RoadDescription();
                 roads.add(i,road);
                 road.roadStatus = ResponseStatus.OK.getValue();
-                JsonObject jRoute = jsonRoutesFromResponse.get(i).getAsJsonObject();
-                String route_geometry = jRoute.get("geometry").getAsString();
-                road.routeHigh = PolylineEncoder.decode(route_geometry, 10, false);
+                JsonObject routeAsJsonObject = jsonRoutesFromResponse.get(i).getAsJsonObject();
+                String geometryFromRoute = routeAsJsonObject.get("geometry").getAsString();
+                road.routeHigh = PolylineEncoder.decode(geometryFromRoute, 10, false);
                 road.boundingBox = BoundingBox.fromGeoPoints(road.routeHigh);
-                road.totalLengthOfRoad = jRoute.get("distance").getAsDouble() / 1000.0;
-                road.totalDurationOfRoad = jRoute.get("duration").getAsDouble();
-                JsonArray jLegs = jRoute.getAsJsonArray("legs");
-                for (int l=0; l<jLegs.size(); l++) {
-                    JsonObject jLeg = jLegs.get(l).getAsJsonObject();
+                road.totalLengthOfRoad = routeAsJsonObject.get("distance").getAsDouble() / 1000.0;
+                road.totalDurationOfRoad = routeAsJsonObject.get("duration").getAsDouble();
+                JsonArray legsAsJsonArray = routeAsJsonObject.getAsJsonArray("legs");
+                for (int l=0; l<legsAsJsonArray.size(); l++) {
+                    JsonObject legAsJsonObject = legsAsJsonArray.get(l).getAsJsonObject();
                     RoadLeg leg = new RoadLeg();
                     road.legs.add(leg);
-                    leg.mLength = jLeg.get("distance").getAsDouble();
-                    leg.mDuration = jLeg.get("duration").getAsDouble();
-                    JsonArray jSteps = jLeg.getAsJsonArray("steps");
+                    leg.mLength = legAsJsonObject.get("distance").getAsDouble();
+                    leg.mDuration = legAsJsonObject.get("duration").getAsDouble();
+                    JsonArray stepsAsJsonArray = legAsJsonObject.getAsJsonArray("steps");
                     RoadNode lastNode = null;
                     String lastRoadName = "";
-                    for (int s=0; s<jSteps.size(); s++) {
-                        JsonObject jStep = jSteps.get(s).getAsJsonObject();
+                    for (int s=0; s<stepsAsJsonArray.size(); s++) {
+                        JsonObject stepAsJsonObject = stepsAsJsonArray.get(s).getAsJsonObject();
                         RoadNode node = new RoadNode();
-                        node.mLength = jStep.get("distance").getAsDouble() / 1000.0;
-                        node.mDuration = jStep.get("duration").getAsDouble();
-                        JsonObject jStepManeuver = jStep.getAsJsonObject("maneuver");
-                        JsonArray jLocation = jStepManeuver.getAsJsonArray("location");
-                        node.mLocation = new GeoPoint(jLocation.get(1).getAsDouble(), jLocation.get(0).getAsDouble());
-                        String direction = jStepManeuver.get("type").getAsString();
-                        switch (direction) {
+                        node.mLength = stepAsJsonObject.get("distance").getAsDouble() / 1000.0;
+                        node.mDuration = stepAsJsonObject.get("duration").getAsDouble();
+                        JsonObject maneuverForEachStep = stepAsJsonObject.getAsJsonObject("maneuver");
+                        JsonArray nodeLocationAsJsonArray = maneuverForEachStep.getAsJsonArray("location");
+                        node.mLocation = new GeoPoint(nodeLocationAsJsonArray.get(1).getAsDouble(), nodeLocationAsJsonArray.get(0).getAsDouble());
+                        String maneuver = maneuverForEachStep.get("type").getAsString();
+                        switch (maneuver) {
                             case "new name":
-                                direction = direction.replaceAll("\\s+","");
+                                maneuver = maneuver.replaceAll("\\s+","");
                                 break;
                             case "continue":
-                                direction = "turnstraight";
+                                maneuver = "turnstraight";
                                 break;
                             case "turn":
                             case "ramp":
                             case "merge":
-                                String modifier = jStepManeuver.get("modifier").getAsString();
-                                direction = direction + modifier;
-                                direction = direction.replaceAll("\\s+","");
+                                String modifier = maneuverForEachStep.get("modifier").getAsString();
+                                maneuver = maneuver + modifier;
+                                maneuver = maneuver.replaceAll("\\s+","");
                                 break;
                             case "roundabout": {
-                                int exit = jStepManeuver.get("exit").getAsInt();
-                                direction = direction + exit;
+                                int exit = maneuverForEachStep.get("exit").getAsInt();
+                                maneuver = maneuver + exit;
                                 break;
                             }
                             case "rotary": {
-                                int exit = jStepManeuver.get("exit").getAsInt();
-                                direction = "roundabout" + exit;
+                                int exit = maneuverForEachStep.get("exit").getAsInt();
+                                maneuver = "roundabout" + exit;
                                 break;
                             }
                             case "fork":
                             {
-                                String modifier2 = jStepManeuver.get("modifier").getAsString();
-                                direction = "turn" + modifier2;
-                                direction = direction.replaceAll("\\s+","");
+                                String modifier2 = maneuverForEachStep.get("modifier").getAsString();
+                                maneuver = "turn" + modifier2;
+                                maneuver = maneuver.replaceAll("\\s+","");
                                 break;
                             }
                             case "off ramp":
                             case "on ramp":
                             {
-                                String modifier3 = jStepManeuver.get("modifier").getAsString();
-                                direction = "turn" + modifier3;
-                                direction = direction.replaceAll("\\s+","");
+                                String modifier3 = maneuverForEachStep.get("modifier").getAsString();
+                                maneuver = "turn" + modifier3;
+                                maneuver = maneuver.replaceAll("\\s+","");
                                 break;
                             }
                         }
-                        node.mManeuverType = getManeuverTypeCodeForDirection(direction);
-                        String roadName = jStep.get("name").getAsString();
+                        node.mManeuverType = getManeuverTypeCodeForDirection(maneuver);
+                        String roadName = stepAsJsonObject.get("name").getAsString();
                         if(roadName == null)
                         {
                             roadName = "";
@@ -228,7 +228,8 @@ import java.util.HashMap;
         }
     }
 
-     RoadDescription getRoad(ArrayList<GeoPoint> waypoints) {
+     RoadDescription getRoad(ArrayList<GeoPoint> waypoints)
+     {
         ArrayList<RoadDescription> roads = getRoads(waypoints, false);
         return roads.get(0);
     }

@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">OsmTest</string>
-	<string name="step">Krok</string>
+    <string name="step">Krok</string>
 </resources>

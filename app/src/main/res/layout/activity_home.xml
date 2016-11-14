@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    tools:background="?android:attr/navigationBarColor"
+    android:background="?android:attr/panelColorBackground">
+
+
+    <Button
+        android:text="Pokaż mapę"
+        android:textColor="#E3E3E3"
+        android:textSize="30sp"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:id="@+id/show_map"
+        android:elevation="3dp"
+        android:visibility="visible"
+        android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_weight="0.28"
+        android:layout_marginTop="50dp"
+        android:onClick="showMapOnClick" />
+
+    <Button
+        android:text="Nawigacja samochodowa"
+        android:textColor="#E3E3E3"
+        android:textSize="30sp"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:id="@+id/car_nawigation"
+        android:layout_weight="0.28"
+        android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_marginTop="50dp"
+        android:visibility="visible"
+        android:onClick="navByCarOnClick" />
+
+    <Button
+        android:text="Nawigacja rowerowa"
+        android:textColor="#E3E3E3"
+        android:textSize="30sp"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:id="@+id/bike_navigation"
+        android:layout_weight="0.28"
+        android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_marginTop="50dp"
+        android:onClick="navByBikeOnClick" />
+
+</LinearLayout>

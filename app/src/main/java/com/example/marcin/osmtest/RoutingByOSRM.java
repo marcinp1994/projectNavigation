@@ -116,6 +116,7 @@ import java.util.HashMap;
             Log.e(LoggerHelper.LOG, "RoutingByOSRM:getRoad: Getting response from http requset is failed!.");
             ArrayList<RoadDescription> roads = new ArrayList<>();
             roads.add(new RoadDescription(waypoints));
+            return roads;
         }
         JsonParser jsonParser = new JsonParser();
         JsonObject responseAsJSONObject = (JsonObject) jsonParser.parse(jsonResponseAsString);

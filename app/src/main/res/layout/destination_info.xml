@@ -1,24 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:weightSum="1"
+    tools:background="@android:drawable/progress_indeterminate_horizontal">
 
-    <TableRow
+
+    <Button
+        android:text="Pokaż mapę"
         android:layout_width="match_parent"
-        android:layout_height="104dp" >
+        android:layout_height="wrap_content"
+        android:id="@+id/show_map"
+        android:elevation="3dp"
+        android:visibility="visible"
+        android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_weight="0.28"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/holo_red_dark" />
 
-        <TextView
-            android:text="Cel podróży"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:id="@+id/textView" />
+    <Button
+        android:text="Nawigacja samochodowa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/car_nawigation"
+        android:layout_weight="0.28"
+        android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_marginTop="50dp"
+        android:background="@android:color/holo_red_dark" />
 
-        <CheckBox
-            android:text="Podróż rowerem?"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkBox2" />
+    <Button
+        android:text="Nawigacja Rowerowa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bike_navigation"
+        android:layout_weight="0.28"
+        android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+        android:layout_marginTop="50dp"
+        android:background="@android:color/holo_red_dark" />
 
-    </TableRow>
 </LinearLayout>

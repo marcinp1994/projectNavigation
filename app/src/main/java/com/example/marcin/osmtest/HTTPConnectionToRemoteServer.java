@@ -16,6 +16,8 @@ import java.net.URL;
     private static String responseFromOSRM;
     private static String userAgent;
 
+    private static String notConnected;
+
     void sendRequest(String Url)
     {
             URL url;
@@ -33,12 +35,21 @@ import java.net.URL;
                 urlConnection.setAllowUserInteraction(false);
                 urlConnection.setConnectTimeout(100000);
                 urlConnection.setReadTimeout(100000);
-                urlConnection.connect();
-                int responseStatus = urlConnection.getResponseCode();
-                if(responseStatus == HttpURLConnection.HTTP_OK)
+                try
                 {
-                    responseFromOSRM = convertStream(urlConnection.getInputStream());
+                    urlConnection.connect();
+                    int responseStatus = urlConnection.getResponseCode();
+                    if(responseStatus == HttpURLConnection.HTTP_OK)
+                    {
+                        responseFromOSRM = convertStream(urlConnection.getInputStream());
+                    }
                 }
+                catch (Exception e)
+                {
+                    notConnected = "NotConnected";
+                    responseFromOSRM = null;
+                }
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -79,6 +90,9 @@ import java.net.URL;
      static String getResponseFromOSRM()
      {
         return responseFromOSRM;
+    }
+    public static String getNotConnected() {
+        return notConnected;
     }
       void setUserAgent(String userAgent)
       {

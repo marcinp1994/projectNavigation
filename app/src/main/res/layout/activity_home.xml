@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
     tools:background="?android:attr/navigationBarColor"
     android:background="?android:attr/panelColorBackground">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#3F51B5"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+    </android.support.v7.widget.Toolbar>
+
 
     <Button
         android:text="Pokaż mapę"
         android:textColor="#E3E3E3"
+        android:layout_marginLeft="9dp"
         android:textSize="30sp"
         android:layout_width="350dp"
         android:layout_height="60dp"
@@ -30,7 +44,8 @@
     <Button
         android:text="Nawigacja samochodowa"
         android:textColor="#E3E3E3"
-        android:textSize="30sp"
+        android:textSize="28sp"
+        android:layout_marginLeft="9dp"
         android:layout_width="350dp"
         android:layout_height="60dp"
         android:background="@drawable/buttonshape"
@@ -49,6 +64,7 @@
         android:text="Nawigacja rowerowa"
         android:textColor="#E3E3E3"
         android:textSize="30sp"
+        android:layout_marginLeft="9dp"
         android:layout_width="350dp"
         android:layout_height="60dp"
         android:background="@drawable/buttonshape"

@@ -1,6 +1,5 @@
 package com.example.marcin.osmtest;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -16,7 +15,6 @@ import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Marcin on 11.11.2016.
@@ -38,32 +36,6 @@ import java.util.HashMap;
     }
 
 
-    @SuppressLint("UseSparseArrays")
-    private static final HashMap<Integer, String> DIRECTIONS;
-     static {
-        DIRECTIONS = new HashMap<>();
-        DIRECTIONS.put(1, "Kontynuuj jazdę");
-        DIRECTIONS.put(2, "Jedź");
-        DIRECTIONS.put(3, "Skręć lekko w lewo");
-        DIRECTIONS.put(4, "Skręć w lewo");
-        DIRECTIONS.put(5, "Skręć ostro w lewo");
-        DIRECTIONS.put(6, "Skręc lekko w prawo");
-        DIRECTIONS.put(7, "Skręć w prawo");
-        DIRECTIONS.put(8, "Skręć ostro w prawo");
-        DIRECTIONS.put(12, "Zawróc");
-        DIRECTIONS.put(17, "Wybierz lewy zjazd");
-        DIRECTIONS.put(18, "Wybierz prawy zjazd");
-        DIRECTIONS.put(19, "Wybierz drogę na wprost");
-        DIRECTIONS.put(24, "Dotarłeś do punktu");
-        DIRECTIONS.put(27, "Wjedź na rondo i opuść je pierwszym zjazdem");
-        DIRECTIONS.put(28, "Wjedź na rondo i opuść je drugim zjazdem");
-        DIRECTIONS.put(29, "Wjedź na rondo i opuść je trzecim zjazdem");
-        DIRECTIONS.put(30, "Wjedź na rondo i opuść je czwartym zjazdem");
-        DIRECTIONS.put(31, "Wjedź na rondo i opuść je piątym zjazdem");
-        DIRECTIONS.put(32, "Wjedź na rondo i opuść je szóstym zjazdem");
-        DIRECTIONS.put(33, "Wjedź na rondo i opuść je siódmym zjazdem");
-        DIRECTIONS.put(34, "Wjedź na rondo i opuść je osmym zjazdem");
-    }
 
 
     private String getHTTPUrl(ArrayList<GeoPoint> waypoints, boolean alternate)
@@ -116,6 +88,7 @@ import java.util.HashMap;
             Log.e(LoggerHelper.LOG, "RoutingByOSRM:getRoad: Getting response from http requset is failed!.");
             ArrayList<RoadDescription> roads = new ArrayList<>();
             roads.add(new RoadDescription(waypoints));
+            roads.get(0).roadStatus = ResponseStatus.INVALID.getValue();
             return roads;
         }
         JsonParser jsonParser = new JsonParser();
@@ -236,8 +209,8 @@ import java.util.HashMap;
     }
 
 
-    private String getDirectionInstruction(int manewr, String nameOfRoad){
-        String direction = DIRECTIONS.get(manewr);
+     private static String getDirectionInstruction(int manewr, String nameOfRoad){
+        String direction = RoadDescription.DIRECTIONS.get(manewr);
         if (direction == null)
         {
             return null;

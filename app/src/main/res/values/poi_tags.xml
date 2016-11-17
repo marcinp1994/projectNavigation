@@ -5,7 +5,7 @@
 		  Note that Nominatim facility search uses Special Phrases instead of OSM tags. 
 		  See http://wiki.openstreetmap.org/wiki/Nominatim/Special_Phrases
 		  and http://wiki.openstreetmap.org/wiki/Nominatim/Special_Phrases/EN
-		  In comment, keywords with no significant result for Paris area on 8/04/2013
+		  In address, keywords with no significant result for Paris area on 8/04/2013
 		-->
 		<!-- 
 		  For OSM tags, see http://wiki.openstreetmap.org/wiki/Map_Features

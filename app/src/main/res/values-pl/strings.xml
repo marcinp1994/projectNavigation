@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="kierunek1">Kontynuuj jazdę[na %s]</string>
+  <string name="kierunek6">Skręć lekko w prawo[w %s]</string>
+  <string name="kierunek7">Skręć w prawo[w %s]</string>
+  <string name="kierunek8">Skręć ostro w prawo[w %s]</string>
+  <string name="kierunek12">Zawróć[na %s]</string>
+  <string name="kierunek5">Skręć ostro w lewo[w %s]</string>
+  <string name="kierunek4">Skręć w lewo[w %s]</string>
+  <string name="kierunek3">Skręć lekko w lewo[w %s]</string>
+  <string name="kierunek24">Dotarłeś do punktu pośredniego</string>
+  <string name="kierunek2">[Jedź %s]</string>
+  <string name="kierunek27">Wjedź na rondo i opuść je pierwszym zjazdem[w %s]</string>
+  <string name="kierunek28">Wjedź na rondo i opuść je drugim zjazdem[w %s]</string>
+  <string name="kierunek29">Wjedź na rondo i opuść je trzecim zjazdem[w %s]</string>
+  <string name="kierunek30">Wjedź na rondo i opuść je czwartym zjazdem[w %s]</string>
+  <string name="kierunek31">Wjedź na rondo i opuść je piątym zjazdem[w %s]</string>
+  <string name="kierunek32">Wjedź na rondo i opuść je szóstym zjazdem[w %s]</string>
+  <string name="kierunek33">Wjedź na rondo i opuść je siódmym zjazdem[w %s]</string>
+  <string name="kierunek34">Wjedź na rondo i opuść je ósmym zjazdem[w %s]</string>
+</resources>

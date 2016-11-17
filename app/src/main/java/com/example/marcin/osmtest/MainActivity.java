@@ -1,11 +1,14 @@
 package com.example.marcin.osmtest;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,7 +26,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity   {
+public class MainActivity extends AppCompatActivity {
     private MapView mMapView;
     private MapController mMapController;
     MapView map;
@@ -59,9 +62,21 @@ public class MainActivity extends Activity   {
         //Introduction
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+
         map = (MapView) findViewById(R.id.map);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
+
+//        SQLiteDatabase mydatabase = openOrCreateDatabase("Historia adresow",MODE_PRIVATE,null);
+//
+//        mydatabase.execSQL("CREATE TABLE IF NOT EXISTS Adress(address VARCHAR,atitude REAL, longitude REAL);");
+//        mydatabase.execSQL("INSERT INTO TutorialsPoint VALUES('admin','admin');");
+
+
         GeoPoint startPoint = new GeoPoint(52.22, 21.01);
          mapController = map.getController();
         mapController.setZoom(10);
@@ -96,10 +111,7 @@ public class MainActivity extends Activity   {
 
 
 
-        MyLocationNewOverlay myLocationNewOverlay = new MyLocationNewOverlay(map);
-        myLocationNewOverlay.enableFollowLocation();
-        myLocationNewOverlay.enableMyLocation();
-        map.getOverlayManager().add(myLocationNewOverlay);
+
 
 //        GeoNamesPOIProvider poiProvider = new GeoNamesPOIProvider("OsmNavigator/1.0");
 //        BoundingBox bb = map.getBoundingBox();
@@ -121,6 +133,48 @@ public class MainActivity extends Activity   {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
+        switch (id)
+        {
+            case R.id.nav_bike:
+            {
+                Intent goToIntent = new Intent(this, NavBikeActivity.class);
+                startActivity(goToIntent);
+                break;
+            }
+            case R.id.nav_car:
+            {
+                Intent goToIntent = new Intent(this, NavCarActivity.class);
+                startActivity(goToIntent);
+                break;
+            }
+            case R.id.history:
+            {
+                Intent goToIntent = new Intent(this, HistoryActivity.class);
+                startActivity(goToIntent);
+                break;
+            }
+            case R.id.nav :
+            {
+                MyLocationNewOverlay myLocationNewOverlay = new MyLocationNewOverlay(map);
+                myLocationNewOverlay.enableFollowLocation();
+                myLocationNewOverlay.enableMyLocation();
+                map.getOverlayManager().add(myLocationNewOverlay);
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void showPositionOnClick(View view)
     {
         MyLocationNewOverlay myLocationNewOverlay = new MyLocationNewOverlay(map);
@@ -128,12 +182,40 @@ public class MainActivity extends Activity   {
         myLocationNewOverlay.enableMyLocation();
         map.getOverlayManager().add(myLocationNewOverlay);
     }
-
+//    public void showLocationOnClick(View view)
+//    {
+//        MyLocationNewOverlay myLocationNewOverlay = new MyLocationNewOverlay(map);
+//        myLocationNewOverlay.enableFollowLocation();
+//        myLocationNewOverlay.enableMyLocation();
+//        map.getOverlayManager().add(myLocationNewOverlay);
+//    }
+//
+//    public void carOnClick(View view)
+//    {
+//        Intent goToIntent = new Intent(this, NavCarActivity.class);
+//        startActivity(goToIntent);
+//    }
+//    public void navCarOnClick(View view)
+//    {
+//        Intent goToIntent = new Intent(this, NavCarActivity.class);
+//        startActivity(goToIntent);
+//    }
+//    public void navBikeOnClick(View view)
+//    {
+//        Intent goToIntent = new Intent(this, NavBikeActivity.class);
+//        startActivity(goToIntent);
+//    }
+public void bikeOnClick(View view)
+{
+    Intent goToIntent = new Intent(this, NavBikeActivity.class);
+    startActivity(goToIntent);
+}
     public void carOnClick(View view)
     {
         Intent goToIntent = new Intent(this, NavCarActivity.class);
         startActivity(goToIntent);
     }
+
     public void addMarker(GeoPoint center) {
         Marker marker = new Marker(map);
         marker.setPosition(center);
@@ -143,5 +225,6 @@ public class MainActivity extends Activity   {
         map.getOverlays().add(marker);
         map.invalidate();
     }
+
 
 }

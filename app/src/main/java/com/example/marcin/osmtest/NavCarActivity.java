@@ -2,11 +2,9 @@ package com.example.marcin.osmtest;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.content.res.ResourcesCompat;
@@ -14,17 +12,19 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.location.LocationListener;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.location.GeocoderNominatim;
+import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
+import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.bonuspack.routing.RoadNode;
 import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.Marker;
@@ -36,29 +36,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NavCarActivity extends Activity   {
-    private MapView mMapView;
-    private MapController mMapController;
+import static com.example.marcin.osmtest.HomeActivity.getOsrmOrMapquest;
+
+public class NavCarActivity extends Activity {
+    private final String keyForMapQuest = "ETefQk4KAr64RQryy3gD1tbwDZsqA0IX";
     MapView map;
-    private LocationManager locationManager;
-    private LocationListener  listener;
-    private String mProviderName;
     protected FolderOverlay mRoadNodeMarkers;
     EditText editText;
     Button button;
-    double a,b;
     ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-    RoutingByOSRM roadManager;
+    MapQuestRoadManager roadManagerForMapQuest;
+    RoutingByOSRM roadManagerForOSRM;
     Context context;
     IMapController mapController;
+    ListView listView;
+    TextView routeInfo;
+    public static double latitude;
+    public static double longitude;
+    public static Address adres;
 
-
-    private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
-    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
-
-    /* Position */
-    private static final int MINIMUM_TIME = 10000;  // 10s
-    private static final int MINIMUM_DISTANCE = 50; // 50m
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,7 +67,7 @@ public class NavCarActivity extends Activity   {
 
         //Introduction
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_nav_car);
+        setContentView(R.layout.activity_nav_bike);
         map = (MapView) findViewById(R.id.map);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
@@ -81,7 +77,7 @@ public class NavCarActivity extends Activity   {
         mapController.setCenter(startPoint);
         map.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-        //0. Using the Marker overlay
+        String osrmOrMapQuest = getOsrmOrMapquest();
         Marker startMarker = new Marker(map);
         startMarker.setPosition(startPoint);
         startMarker.setIcon(getResources().getDrawable(R.drawable.start));
@@ -92,15 +88,21 @@ public class NavCarActivity extends Activity   {
         //startMarker.setInfoWindow(new MarkerInfoWindow(R.layout.bonuspack_bubble_black, map));
         startMarker.setDraggable(true);
         map.getOverlays().add(startMarker);
+        listView = (ListView) findViewById(android.R.id.list);
 
-        //1. "Hello, Routing World"
-        roadManager = new RoutingByOSRM(this);
-        //2. Playing with the RoadManager
-        //roadManager roadManager = new MapQuestRoadManager("YOUR_API_KEY");
-        //roadManager.addRequestOption("routeType=bicycle");
+        if(osrmOrMapQuest.equals("OSRM"))
+        {
+            roadManagerForOSRM = new RoutingByOSRM(this);
+        }
+        else
+        {
+            roadManagerForMapQuest = new MapQuestRoadManager(keyForMapQuest);
+
+        }
         context = this;
         waypoints.add(startPoint);
         editText   = (EditText)findViewById(R.id.destination);
+        routeInfo = (TextView) findViewById(R.id.routeInfo);
         button = (Button)findViewById(R.id.buttonSearchDep);
         button.setOnClickListener(
                 new View.OnClickListener()
@@ -120,67 +122,136 @@ public class NavCarActivity extends Activity   {
                             e.printStackTrace();
                         }
 
-
-
-                        Address adress = addresses.get(0);
-                        a = adress.getLatitude();
-                        b = adress.getLongitude();
-                        GeoPoint endPoint = new GeoPoint(a, b);
-                        Marker endMarker = new Marker(map);
-                        endMarker.setPosition(endPoint);
-                        endMarker.setIcon(getResources().getDrawable(R.drawable.end));
-                        endMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                        endMarker.setTitle("End point");
-                        waypoints.add(endPoint);
-                        endMarker.setDraggable(true);
-                        map.getOverlays().add(endMarker);
-                        RoadDescription road = roadManager.getRoad(waypoints);
-                        double lengthOfRoad = roadManager.getRoad(waypoints).totalLengthOfRoad;
-                        double duration = roadManager.getRoad(waypoints).totalDurationOfRoad;
-                        System.out.println(lengthOfRoad + "__" + duration);
-                        MarkerInfoWindow infoWindow1 = new MarkerInfoWindow(R.layout.destination_info, map);
-
-                        if (road.roadStatus != Road.STATUS_OK)
-                            Toast.makeText(context, "Error when loading the road - status=" + road.roadStatus, Toast.LENGTH_SHORT).show();
-
-                        Polyline roadOverlay = RoadDescription.buildRoadOverlay(road, Color.BLUE, 10);
-                        map.getOverlays().add(roadOverlay);
-                        map.invalidate();
-                        mRoadNodeMarkers = new FolderOverlay();
-                        mRoadNodeMarkers.setName("Road Steps");
-                        map.getOverlays().add(mRoadNodeMarkers);
-                        mRoadNodeMarkers.getItems().clear();
-                        Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_node, null);
-                        int n = road.allTurningPointsOfRoadPoints.size();
-                        MarkerInfoWindow infoWindow = new MarkerInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map);
-                        TypedArray iconIds = getResources().obtainTypedArray(R.array.direction_icons);
-                        for (int i=0; i<n; i++){
-                            RoadNode node = road.allTurningPointsOfRoadPoints.get(i);
-                            String instructions = (node.mInstructions==null ? "" : node.mInstructions);
-                            Marker nodeMarker = new Marker(map);
-                            nodeMarker.setTitle(getString(R.string.step)+ " " + (i+1));
-                            nodeMarker.setSnippet(instructions);
-                            nodeMarker.setSubDescription(RoadDescription.getLenAndDurAsString(context, node.mLength, node.mDuration));
-                            nodeMarker.setPosition(node.mLocation);
-                            nodeMarker.setIcon(icon);
-                            nodeMarker.setInfoWindow(infoWindow); //use a shared infowindow.
-                            int iconId = iconIds.getResourceId(node.mManeuverType, R.drawable.empty);
-                            if (iconId != R.drawable.empty){
-                                Drawable image = ResourcesCompat.getDrawable(getResources(), iconId, null);
-                                nodeMarker.setImage(image);
-                            }
-                            mRoadNodeMarkers.add(nodeMarker);
+                        Address adress = null;
+                        if(addresses.size() == 0)
+                        {
+                            Toast.makeText(context, "Bad address: " + editText.getText().toString(), Toast.LENGTH_SHORT).show();
                         }
-                        map.getOverlays().add(mRoadNodeMarkers);
-                        iconIds.recycle();
-                        map.invalidate();
-                    }
-                });
+                        else
+                        {
+                            adress = addresses.get(0);
+                            adres = adress;
+                            latitude = adress.getLatitude();
+                            longitude = adress.getLongitude();
+                            AddressesDataSource datasource = new AddressesDataSource(context);
+                            datasource.open();
 
-        MyLocationNewOverlay myLocationNewOverlay = new MyLocationNewOverlay(map);
-        myLocationNewOverlay.enableFollowLocation();
-        myLocationNewOverlay.enableMyLocation();
-        map.getOverlayManager().add(myLocationNewOverlay);
+                            StringBuilder sb = new StringBuilder();
+                            String adressInfo;
+
+                            if(adress.getMaxAddressLineIndex() == 0)
+                            {
+                                adressInfo = adress.getCountryName() + ", " + adress.getSubAdminArea();
+                                sb.append(adressInfo);
+                            }
+                            else
+                            {
+                                for(int a= 0 ; a< adress.getMaxAddressLineIndex()+1; a++ )
+                                {
+                                    adressInfo = adress.getAddressLine(a);
+                                    if(a == adress.getMaxAddressLineIndex())
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        adressInfo += ", ";
+                                    }
+                                    sb.append(adressInfo);
+                                }
+                            }
+
+                            String addressName = sb.toString();
+                            datasource.createDatabaseAddress(addressName, latitude, longitude);
+                            GeoPoint endPoint = new GeoPoint(latitude, longitude);
+                            Marker endMarker = new Marker(map);
+                            endMarker.setPosition(endPoint);
+                            endMarker.setIcon(getResources().getDrawable(R.drawable.end));
+                            endMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                            endMarker.setTitle("End point");
+                            waypoints.add(endPoint);
+                            endMarker.setDraggable(true);
+                            map.getOverlays().add(endMarker);
+                            RoadDescription road = null;
+                            Road road2 = null;
+                            double lengthOfRoad = 0;
+                            double duration = 0;
+                            Polyline roadOverlay;
+                            if(roadManagerForOSRM != null)
+                            {
+                                road = roadManagerForOSRM.getRoad(waypoints);
+                                lengthOfRoad = roadManagerForOSRM.getRoad(waypoints).totalLengthOfRoad;
+                                duration = roadManagerForOSRM.getRoad(waypoints).totalDurationOfRoad;
+                                if (road.roadStatus!= Road.STATUS_OK)
+                                    Toast.makeText(context, "Error when loading the road - status=" + road.roadStatus, Toast.LENGTH_SHORT).show();
+
+                                roadOverlay = RoadDescription.buildRoadOverlay(road, Color.BLUE, 10);
+                            }
+                            else
+                            {
+                                road2 = roadManagerForMapQuest.getRoad(waypoints);
+                                lengthOfRoad = roadManagerForMapQuest.getRoad(waypoints).mLength;
+                                duration = roadManagerForMapQuest.getRoad(waypoints).mDuration;
+                                if (road2.mStatus!= Road.STATUS_OK)
+                                    Toast.makeText(context, "Error when loading the road - status=" + road2.mStatus, Toast.LENGTH_SHORT).show();
+
+                                roadOverlay = RoadManager.buildRoadOverlay(road2, Color.BLUE, 10);
+                            }
+
+                            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.routeView);
+                            linearLayout.setVisibility(View.VISIBLE);
+                            routeInfo.setText(RoadDescription.getLenAndDurAsString(context, lengthOfRoad,duration));
+                            MarkerInfoWindow infoWindow1 = new MarkerInfoWindow(R.layout.destination_info, map);
+
+                            map.getOverlays().add(roadOverlay);
+                            map.invalidate();
+                            mRoadNodeMarkers = new FolderOverlay();
+                            mRoadNodeMarkers.setName("Road Steps");
+                            map.getOverlays().add(mRoadNodeMarkers);
+                            mRoadNodeMarkers.getItems().clear();
+                            Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_node, null);
+                            int n;
+                            if(roadManagerForOSRM != null){
+                                assert road != null;
+                                n = road.allTurningPointsOfRoadPoints.size();
+                            }
+                            else
+                            {
+                                assert road2 != null;
+                                n=road2.mNodes.size();
+                            }
+                            MarkerInfoWindow infoWindow = new MarkerInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map);
+                            for (int i=0; i<n; i++){
+                                RoadNode node;
+                                if(roadManagerForOSRM != null)
+                                {
+                                    assert road != null;
+                                    node = road.allTurningPointsOfRoadPoints.get(i);
+                                }
+                                else
+                                {
+                                    assert road2 != null;
+                                    node = road2.mNodes.get(i);
+                                }
+                                String instructions = (node.mInstructions==null ? "" : node.mInstructions);
+                                Marker nodeMarker = new Marker(map);
+                                nodeMarker.setTitle(getString(R.string.step)+ " " + (i+1));
+                                nodeMarker.setSnippet(instructions);
+                                nodeMarker.setSubDescription(RoadDescription.getLenAndDurAsString(context, node.mLength, node.mDuration));
+                                nodeMarker.setPosition(node.mLocation);
+                                nodeMarker.setIcon(icon);
+                                nodeMarker.setInfoWindow(infoWindow);
+                                Drawable destinationIcon = RoadDescription.chooseIconForManeuver(node.mManeuverType, context);
+                                nodeMarker.setImage(destinationIcon);
+                                mRoadNodeMarkers.add(nodeMarker);
+                            }
+                            map.getOverlays().add(mRoadNodeMarkers);
+                            map.invalidate();
+                        }
+                    }
+
+
+                });
 
 //        GeoNamesPOIProvider poiProvider = new GeoNamesPOIProvider("OsmNavigator/1.0");
 //        BoundingBox bb = map.getBoundingBox();

@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
-import org.osmdroid.bonuspack.location.GeocoderNominatim;
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -32,7 +31,6 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,21 +38,20 @@ import static com.example.marcin.osmtest.HomeActivity.getOsrmOrMapquest;
 
 public class NavCarActivity extends Activity {
     private final String keyForMapQuest = "ETefQk4KAr64RQryy3gD1tbwDZsqA0IX";
-    MapView map;
+    static MapView map;
     protected FolderOverlay mRoadNodeMarkers;
     EditText editText;
     Button button;
-    ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
+    ArrayList<GeoPoint> waypoints = new ArrayList<>();
     MapQuestRoadManager roadManagerForMapQuest;
-    RoutingByOSRM roadManagerForOSRM;
+    static RoutingByOSRM roadManagerForOSRM;
     Context context;
     IMapController mapController;
     ListView listView;
-    TextView routeInfo;
+    static TextView routeInfo;
     public static double latitude;
     public static double longitude;
     public static Address adres;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,45 +87,35 @@ public class NavCarActivity extends Activity {
         map.getOverlays().add(startMarker);
         listView = (ListView) findViewById(android.R.id.list);
 
-        if(osrmOrMapQuest.equals("OSRM"))
-        {
+        if (osrmOrMapQuest.equals("OSRM")) {
             roadManagerForOSRM = new RoutingByOSRM(this);
-        }
-        else
-        {
+        } else {
             roadManagerForMapQuest = new MapQuestRoadManager(keyForMapQuest);
 
         }
         context = this;
         waypoints.add(startPoint);
-        editText   = (EditText)findViewById(R.id.destination);
+        editText = (EditText) findViewById(R.id.destination);
         routeInfo = (TextView) findViewById(R.id.routeInfo);
-        button = (Button)findViewById(R.id.buttonSearchDep);
+        final LinearLayout linearLayout = (LinearLayout)findViewById(R.id.routeView);
+
+        button = (Button) findViewById(R.id.buttonSearchDep);
         button.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
+                new View.OnClickListener() {
+                    public void onClick(View view) {
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
 
                         inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                                 InputMethodManager.HIDE_NOT_ALWAYS);
-                        List<Address> addresses =null;
-                        GeocoderNominatim geocoder = new GeocoderNominatim("navigationgps1");
-                        try {
-                            addresses= geocoder.getFromLocationName(editText.getText().toString(),1);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
+                        List<Address> addresses = null;
+                        AddressFromName addressFromName = new AddressFromName();
+                        addresses = addressFromName.getFromLocationName(editText.getText().toString(), 1,keyForMapQuest);
+                        linearLayout.setVisibility(View.VISIBLE);
                         Address adress = null;
-                        if(addresses.size() == 0)
-                        {
+                        if (addresses.size() == 0) {
                             Toast.makeText(context, "Bad address: " + editText.getText().toString(), Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                        {
+                        } else {
                             adress = addresses.get(0);
                             adres = adress;
                             latitude = adress.getLatitude();
@@ -139,22 +126,15 @@ public class NavCarActivity extends Activity {
                             StringBuilder sb = new StringBuilder();
                             String adressInfo;
 
-                            if(adress.getMaxAddressLineIndex() == 0)
-                            {
+                            if (adress.getMaxAddressLineIndex() == 0) {
                                 adressInfo = adress.getCountryName() + ", " + adress.getSubAdminArea();
                                 sb.append(adressInfo);
-                            }
-                            else
-                            {
-                                for(int a= 0 ; a< adress.getMaxAddressLineIndex()+1; a++ )
-                                {
+                            } else {
+                                for (int a = 0; a < adress.getMaxAddressLineIndex() + 1; a++) {
                                     adressInfo = adress.getAddressLine(a);
-                                    if(a == adress.getMaxAddressLineIndex())
-                                    {
+                                    if (a == adress.getMaxAddressLineIndex()) {
 
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         adressInfo += ", ";
                                     }
                                     sb.append(adressInfo);
@@ -198,13 +178,7 @@ public class NavCarActivity extends Activity {
                                 roadOverlay = RoadManager.buildRoadOverlay(road2, Color.BLUE, 10);
                             }
 
-                            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.routeView);
-                            linearLayout.setVisibility(View.VISIBLE);
-                            routeInfo.setText(RoadDescription.getLenAndDurAsString(context, lengthOfRoad,duration));
-                            MarkerInfoWindow infoWindow1 = new MarkerInfoWindow(R.layout.destination_info, map);
-
                             map.getOverlays().add(roadOverlay);
-                            map.invalidate();
                             mRoadNodeMarkers = new FolderOverlay();
                             mRoadNodeMarkers.setName("Road Steps");
                             map.getOverlays().add(mRoadNodeMarkers);
@@ -245,13 +219,15 @@ public class NavCarActivity extends Activity {
                                 nodeMarker.setImage(destinationIcon);
                                 mRoadNodeMarkers.add(nodeMarker);
                             }
+                            routeInfo.setText(RoadDescription.getLenAndDurAsString(context, lengthOfRoad, duration));
+                            MarkerInfoWindow infoWindow1 = new MarkerInfoWindow(R.layout.destination_info, map);
                             map.getOverlays().add(mRoadNodeMarkers);
                             map.invalidate();
                         }
-                    }
+                        }
+                    });
 
-
-                });
+    }
 
 //        GeoNamesPOIProvider poiProvider = new GeoNamesPOIProvider("OsmNavigator/1.0");
 //        BoundingBox bb = map.getBoundingBox();
@@ -273,7 +249,7 @@ public class NavCarActivity extends Activity {
 
 
 
-    }
+
 
     public void BtnTrackingModeOnClick(View view)
     {

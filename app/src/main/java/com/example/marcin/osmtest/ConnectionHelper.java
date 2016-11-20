@@ -4,7 +4,7 @@ package com.example.marcin.osmtest;
  * Created by Marcin on 11.11.2016.
  */
 
-class LoggerHelper
+class ConnectionHelper
 {
      static final String LOG = "NAVIGATIONGPS";
      static final String DEFAULT_USER_AGENT = "navigationgps1";
@@ -23,7 +23,7 @@ class LoggerHelper
     }
 
     public void addOptionToRequest(String requestOption){
-        LoggerHelper.requestOption += "&" + requestOption;
+        ConnectionHelper.requestOption += "&" + requestOption;
     }
 
 
@@ -32,7 +32,7 @@ class LoggerHelper
     }
 
     public static void setRequestOption(String requestOption) {
-        LoggerHelper.requestOption = requestOption;
+        ConnectionHelper.requestOption = requestOption;
     }
 
 }

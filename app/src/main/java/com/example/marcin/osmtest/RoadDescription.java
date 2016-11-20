@@ -167,241 +167,201 @@ import java.util.HashMap;
             case 0:
             {
                 directionIcon =  context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 1:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.straight);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 2:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.straight);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 3:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightleft);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 4:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.turnleft);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 5:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.sharpleft);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 6:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightright);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 7:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.turnright);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 8:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.sharpright);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 9:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightleft);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 10:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightright);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 11:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.straight);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 12:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.uturn);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 13:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.uturn);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 14:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.uturn);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 15:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightleft);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 16:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightright);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 17:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightleft);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 18:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightright);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 19:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.slightright);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 20:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 21:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 22:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 23:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 24:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.arrived);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 25:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.arrived);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 26:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.arrived);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 27:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.roundabout);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 28:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.roundabout);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 29:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.roundabout);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 30:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.roundabout);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 31:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.roundabout);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 32:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.roundabout);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 33:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.roundabout);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 34:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.roundabout);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 35:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 36:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 37:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 38:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
             case 39:
             {
                 directionIcon = context.getResources().getDrawable(R.drawable.empty);
-//                nodeMarker.setImage(directionIcon);
                 break;
             }
 

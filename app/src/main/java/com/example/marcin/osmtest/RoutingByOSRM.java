@@ -32,7 +32,7 @@ import java.util.ArrayList;
      RoutingByOSRM(Context context)
     {
         allServiceUrl = HTTP_OSRM_ROUTING_URL;
-        userAgent = LoggerHelper.DEFAULT_USER_AGENT;
+        userAgent = ConnectionHelper.DEFAULT_USER_AGENT;
     }
 
 
@@ -60,7 +60,7 @@ import java.util.ArrayList;
 
     private String getJsonResponseAsString(String url, String userAgent)
     {
-        return LoggerHelper.getResponseStringFromUrl(url,userAgent);
+        return ConnectionHelper.getResponseStringFromUrl(url,userAgent);
     }
 
     private int getManeuverTypeCodeForDirection(String direction)
@@ -81,11 +81,11 @@ import java.util.ArrayList;
     private ArrayList<RoadDescription> getRoads(ArrayList<GeoPoint> waypoints, boolean getAlternate)
     {
         String url = getHTTPUrl(waypoints, getAlternate);
-        Log.d(LoggerHelper.LOG, "RoutingUrlOSRM" + url);
+        Log.d(ConnectionHelper.LOG, "RoutingUrlOSRM" + url);
         String jsonResponseAsString = getJsonResponseAsString(url, userAgent);
         if (jsonResponseAsString == null)
         {
-            Log.e(LoggerHelper.LOG, "RoutingByOSRM:getRoad: Getting response from http requset is failed!.");
+            Log.e(ConnectionHelper.LOG, "RoutingByOSRM:getRoad: Getting response from http requset is failed!.");
             ArrayList<RoadDescription> roads = new ArrayList<>();
             roads.add(new RoadDescription(waypoints));
             roads.get(0).roadStatus = ResponseStatus.INVALID.getValue();
@@ -96,7 +96,7 @@ import java.util.ArrayList;
         JsonElement responseStatus = responseAsJSONObject.get("code");
         if(responseStatus.getAsString().equals(ResponseCodeOK)==false)
         {
-            Log.e(LoggerHelper.LOG,"RoutingByOSRM.getRoad: error=" + responseStatus);
+            Log.e(ConnectionHelper.LOG,"RoutingByOSRM.getRoad: error=" + responseStatus);
             ArrayList<RoadDescription> roads = new ArrayList<>();
             roads.add(new RoadDescription(waypoints));
             if ("NoRoute".equals(responseStatus.getAsString()))
@@ -197,7 +197,7 @@ import java.util.ArrayList;
                     }
                 }
             }
-            Log.d(LoggerHelper.LOG, "RoutingByOSRM.getRoads - finished");
+            Log.d(ConnectionHelper.LOG, "RoutingByOSRM.getRoads - finished");
             return roads;
         }
     }

@@ -8,16 +8,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import org.osmdroid.util.GeoPoint;
-
-import java.util.ArrayList;
-
-import static com.example.marcin.osmtest.HTTPConnectionToRemoteServer.getNotConnected;
+import static com.example.marcin.osmtest.HTTPConnectionToRemoteServer.getStatusResponse;
 
 public class HomeActivity extends AppCompatActivity {
     private int statusFromTest;
-
-
 
     private static String OSRM_OR_MAPQUEST;
 
@@ -28,20 +22,16 @@ public class HomeActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        RoutingByOSRM testRouting = new RoutingByOSRM(this);
-        ArrayList<GeoPoint> testWaypoints = new ArrayList<>();
-        testWaypoints.add(new GeoPoint(20.0,21.0));
-        testWaypoints.add(new GeoPoint(22.0,23.0));
-        statusFromTest = testRouting.getRoad(testWaypoints).roadStatus;
-        String statusConnectionToHTTP = getNotConnected();
-        if(statusFromTest == ResponseStatus.INVALID.getValue() || statusConnectionToHTTP.equals("NotConnected"))
+        String testConnection = "https://router.project-osrm.org/route/v1/driving/13.388860,52.517037;13.385983,52.496891?steps=true&alternatives=true";
+        new HttpConnectionAsyncTask(testConnection).execute();
+        statusFromTest = getStatusResponse();
+        if(statusFromTest == ResponseStatus.OK.getValue())
         {
-            OSRM_OR_MAPQUEST = "MAP_QUEST";
+            OSRM_OR_MAPQUEST = "OSRM";
         }
         else
         {
-            OSRM_OR_MAPQUEST = "OSRM";
+            OSRM_OR_MAPQUEST = "MAP_QUEST";
         }
 
     }

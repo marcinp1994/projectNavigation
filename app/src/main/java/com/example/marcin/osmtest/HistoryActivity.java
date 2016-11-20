@@ -1,7 +1,10 @@
 package com.example.marcin.osmtest;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -11,45 +14,78 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class HistoryActivity extends AppCompatActivity {
     private static AddressesDataSource datasource;
     static ListView listView;
+    Context context;
+    View view1;
+    DatabaseAddress address;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-         listView = (ListView) findViewById(android.R.id.list);
+        listView = (ListView) findViewById(android.R.id.list);
         toolbar.setTitle("Historia adresów");
         setSupportActionBar(toolbar);
-
+        context = this;
         datasource = new AddressesDataSource(this);
         datasource.open();
 
-        List<DatabaseAddress> values = datasource.getAllAddressesFromDatabase();
+        Set<DatabaseAddress> values = datasource.getAllAddressesFromDatabase();
+        List<DatabaseAddress> listOfAddresses = new ArrayList<DatabaseAddress>(values);
 
         // use the SimpleCursorAdapter to show the
         // elements in a ListView
         ArrayAdapter<DatabaseAddress> adapter = new ArrayAdapter<DatabaseAddress>(this,
-                android.R.layout.simple_list_item_1, values);
+                android.R.layout.simple_list_item_1, listOfAddresses);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ArrayAdapter<DatabaseAddress> adapter = (ArrayAdapter<DatabaseAddress>) listView.getAdapter();
-                DatabaseAddress comment = adapter.getItem(i);
-                double latitude = comment.getLatitude();
-                double longitude = comment.getLatitude();
-                Intent myIntent = new Intent(view.getContext(), NavBikeActivity.class);
-                startActivityForResult(myIntent, 0);
+                address = adapter.getItem(i);
+                view1 = view;
 
-//                datasource.deleteAddressInDatabase(comment);
-//                adapter.remove(comment);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Wybór");
+
+                // set dialog message
+                alertDialogBuilder
+                        .setMessage("Podróżujesz Samochodem czy rowerem?")
+                        .setCancelable(false)
+                        .setPositiveButton("Samochód",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id)
+                            {
+                                Intent myIntent = new Intent(view1.getContext(), NavCarActivity.class);
+                                myIntent.putExtra("lon", address.getLongitude());
+                                myIntent.putExtra("lat", address.getLatitude());
+                                startActivity(myIntent);
+                            }
+                        })
+                        .setNegativeButton("Rower",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                Intent myIntent = new Intent(view1.getContext(), NavBikeActivity.class);
+                                myIntent.putExtra("lon", address.getLongitude());
+                                myIntent.putExtra("lat", address.getLatitude());
+                                startActivity(myIntent);
+                            }
+                        });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show it
+                alertDialog.show();
+
             }
         });
     }
@@ -110,7 +146,7 @@ public class HistoryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item)
     {
         ArrayAdapter<DatabaseAddress> adapter = (ArrayAdapter<DatabaseAddress>) listView.getAdapter();
-        DatabaseAddress comment = null;
+        DatabaseAddress addres = null;
         int id = item.getItemId();
         switch (id)
         {
@@ -121,9 +157,9 @@ public class HistoryActivity extends AppCompatActivity {
 
                     for(int i=adapter.getCount()-1; i>=0; i--)
                     {
-                        comment = (DatabaseAddress) adapter.getItem(i);
-                        datasource.deleteAddressInDatabase(comment);
-                        adapter.remove(comment);
+                        addres = (DatabaseAddress) adapter.getItem(i);
+                        datasource.deleteAddressInDatabase(addres);
+                        adapter.remove(addres);
                     }
                 }
             }
@@ -134,13 +170,14 @@ public class HistoryActivity extends AppCompatActivity {
 
                     for(int i=adapter.getCount()-1; i>=0; i--)
                     {
-                        comment = (DatabaseAddress) adapter.getItem(i);
-                        datasource.deleteAddressInDatabase(comment);
-                        adapter.remove(comment);
+                        addres = (DatabaseAddress) adapter.getItem(i);
+                        datasource.deleteAddressInDatabase(addres);
+                        adapter.remove(addres);
                     }
                 }
             }
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

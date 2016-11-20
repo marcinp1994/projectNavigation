@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AddressesDataSource {
 
@@ -28,9 +28,9 @@ public class AddressesDataSource {
         dbHelper.close();
     }
 
-    public DatabaseAddress createDatabaseAddress(String comment, double latitude, double longitude) {
+    public DatabaseAddress createDatabaseAddress(String address, double latitude, double longitude) {
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_ADDRES, comment);
+        values.put(MySQLiteHelper.COLUMN_ADDRES, address);
         values.put(MySQLiteHelper.COLUMN_LATITUDE, latitude);
         values.put(MySQLiteHelper.COLUMN_LONGITUDE, longitude);
         long insertId = database.insert(MySQLiteHelper.TABLE_ADDRESSES, null,
@@ -50,8 +50,8 @@ public class AddressesDataSource {
                 + " = " + id, null);
     }
 
-    public List<DatabaseAddress> getAllAddressesFromDatabase() {
-        List<DatabaseAddress> addresses = new ArrayList<DatabaseAddress>();
+    public Set<DatabaseAddress> getAllAddressesFromDatabase() {
+        Set<DatabaseAddress> addresses = new HashSet<>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_ADDRESSES,
                 allColumns, null, null, null, null, null);

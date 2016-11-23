@@ -13,4 +13,20 @@
         <item name="colorControlActivated">#000000</item>
     </style>
 
+    <style name="Theme.Custom" parent="@style/Theme.AppCompat">
+        <item name="windowActionBar">false</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="CustomActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <!-- Support library compatibility -->
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+    <style name="TransparentToolbar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+
 </resources>

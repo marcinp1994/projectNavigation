@@ -63,9 +63,9 @@ public class AddressFromName {
                         JSONObject jAddress = jsonAddress.getJSONObject("address");
 
                         int index = 0;
-                        if (jAddress.has("road")){
-                            address.setAddressLine(index++, jAddress.getString("road"));
-                            address.setThoroughfare(jAddress.getString("road"));
+                        if (jAddress.has("road2")){
+                            address.setAddressLine(index++, jAddress.getString("road2"));
+                            address.setThoroughfare(jAddress.getString("road2"));
                         }
                         if (jAddress.has("suburb")){
                             address.setSubLocality(jAddress.getString("suburb"));

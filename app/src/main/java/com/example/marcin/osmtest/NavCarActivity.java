@@ -1,152 +1,39 @@
 package com.example.marcin.osmtest;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.os.Bundle;
-import android.os.StrictMode;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-
-import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.bonuspack.routing.RoadNode;
-import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
-import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-
-import java.util.ArrayList;
 
 import static com.example.marcin.osmtest.HomeActivity.getOsrmOrMapquest;
 
-public class NavCarActivity extends Activity {
-    public static double latitude;
-    public static double longitude;
-    public static Address adres;
-    static MapView map;
-    static RoutingByOSRM roadManagerForOSRM;
-    static TextView routeInfo;
-    private final String keyForMapQuest = "ETefQk4KAr64RQryy3gD1tbwDZsqA0IX";
-    protected FolderOverlay mRoadNodeMarkers;
-    EditText editText;
-    Button button;
-    ArrayList<GeoPoint> waypoints = new ArrayList<>();
-    MapQuestRoadManager roadManagerForMapQuest;
-    Context context;
-    IMapController mapController;
-    ListView listView;
-    RoadDescription road = null;
-    Road road2 = null;
-    double lengthOfRoad = 0;
-    double duration = 0;
-    private GoogleApiClient client;
+public class NavCarActivity extends NavActivity {
+    RoutingByOSRM roadManagerForOSRM;
+    RoadDescription road2 = null;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        OpenStreetMapTileProviderConstants.setCachePath(this.getFilesDir().getAbsolutePath());
-        OpenStreetMapTileProviderConstants.setCacheSizes(1000L, 900L);
-        OpenStreetMapTileProviderConstants.setOfflineMapsPath("/storage/extSdCard/osmdroid");
-        OpenStreetMapTileProviderConstants.setUserAgentValue(BuildConfig.APPLICATION_ID);
+    public int getRequestCode() {
+        return 2;
+    }
 
-        //Introduction
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_nav);
-        map = (MapView) findViewById(R.id.map);
-        map.setBuiltInZoomControls(true);
-        map.setMultiTouchControls(true);
-        GeoPoint startPoint = new GeoPoint(50.0098, 19.9514);
-        mapController = map.getController();
-        mapController.setZoom(14);
-        mapController.setCenter(startPoint);
-        map.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
+    public void onAddressRecived(double longitude, double latitude) {
         String osrmOrMapQuest = getOsrmOrMapquest();
-        Marker startMarker = new Marker(map);
-        startMarker.setPosition(startPoint);
-        startMarker.setIcon(getResources().getDrawable(R.drawable.start));
-        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        startMarker.setTitle("Start point");
-        // startMarker.setIcon(getResources().getDrawable(R.drawable.marker_kml_point).mutate());
-        // startMarker.setImage(getResources().getDrawable(R.drawable.ic_launcher));
-        //startMarker.setInfoWindow(new MarkerInfoWindow(R.layout.bonuspack_bubble_black, map));
-        startMarker.setDraggable(true);
-        map.getOverlays().add(startMarker);
-        listView = (ListView) findViewById(android.R.id.list);
-
-        map.invalidate();
         if (osrmOrMapQuest.equals("OSRM")) {
             roadManagerForOSRM = new RoutingByOSRM(this);
         } else {
             roadManagerForMapQuest = new MapQuestRoadManager(keyForMapQuest);
 
         }
-        context = this;
-        waypoints.add(startPoint);
-        routeInfo = (TextView) findViewById(R.id.routeInfo);
 
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-        Intent intent = getIntent();
-        double lon = intent.getDoubleExtra("lon", 0.0);
-        double lat = intent.getDoubleExtra("lat", 0.0);
-        if(lon == 0.0 && lat == 0.0) {
-            Intent goToIntent = new Intent(this, SearchActivity.class);
-            startActivityForResult(goToIntent, 2);
-        } else {
-            onAddressRecived(lon, lat);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 2) {
-            if (resultCode == RESULT_OK) {
-                double lon = data.getDoubleExtra("lon", 0.0);
-                double lat = data.getDoubleExtra("lat", 0.0);
-                onAddressRecived(lon, lat);
-            }
-        }
-    }
-//        GeoNamesPOIProvider poiProvider = new GeoNamesPOIProvider("OsmNavigator/1.0");
-//        BoundingBox bb = map.getBoundingBox();
-//        ArrayList<POI> pois = poiProvider.getPOICloseTo(startPoint, 30, 20.0);
-//        FolderOverlay poiMarkers = new FolderOverlay(this);
-//        map.getOverlays().add(poiMarkers);
-//        Drawable poiIcon = getResources().getDrawable(R.drawable.marker_poi_default);
-//        for (POI poi:pois){
-//            Marker poiMarker = new Marker(map);
-//            poiMarker.setTitle(poi.mType);
-//            poiMarker.setSnippet(poi.mDescription);
-//            poiMarker.setPosition(poi.mLocation);
-//            poiMarker.setIcon(poiIcon);
-//            if (poi.mThumbnail != null){
-//                poiMarker.setImage(new BitmapDrawable(poi.mThumbnail));
-//            }
-//            poiMarkers.add(poiMarker);
-//        }
-
-    public void onAddressRecived(double longitude, double latitude) {
         GeoPoint endPoint = new GeoPoint(latitude, longitude);
         Marker endMarker = new Marker(map);
         endMarker.setPosition(endPoint);
@@ -164,22 +51,22 @@ public class NavCarActivity extends Activity {
                 Polyline roadOverlay;
 
                 if (roadManagerForOSRM != null) {
-                    road = roadManagerForOSRM.getRoad(waypoints);
+                    road2 = roadManagerForOSRM.getRoad(waypoints);
                     lengthOfRoad = roadManagerForOSRM.getRoad(waypoints).totalLengthOfRoad;
                     duration = roadManagerForOSRM.getRoad(waypoints).totalDurationOfRoad;
-                    if (road.roadStatus != Road.STATUS_OK)
-                        Toast.makeText(context, "Error when loading the road - status=" + road.roadStatus, Toast.LENGTH_SHORT).show();
+                    if (road2.roadStatus != Road.STATUS_OK)
+                        Toast.makeText(context, "Error when loading the road2 - status=" + road2.roadStatus, Toast.LENGTH_SHORT).show();
 
-                    roadOverlay = RoadDescription.buildRoadOverlay(road, Color.BLUE, 10);
+                    roadOverlay = RoadDescription.buildRoadOverlay(road2, Color.BLUE, 10);
                     map.getOverlays().add(roadOverlay);
                 } else {
-                    road2 = roadManagerForMapQuest.getRoad(waypoints);
+                    road = roadManagerForMapQuest.getRoad(waypoints);
                     lengthOfRoad = roadManagerForMapQuest.getRoad(waypoints).mLength;
                     duration = roadManagerForMapQuest.getRoad(waypoints).mDuration;
-                    if (road2.mStatus != Road.STATUS_OK)
-                        Toast.makeText(context, "Error when loading the road - status=" + road2.mStatus, Toast.LENGTH_SHORT).show();
+                    if (road.mStatus != Road.STATUS_OK)
+                        Toast.makeText(context, "Error when loading the road2 - status=" + road.mStatus, Toast.LENGTH_SHORT).show();
 
-                    roadOverlay = RoadManager.buildRoadOverlay(road2, Color.BLUE, 10);
+                    roadOverlay = RoadManager.buildRoadOverlay(road, Color.BLUE, 10);
                     map.getOverlays().add(roadOverlay);
                 }
 
@@ -187,41 +74,29 @@ public class NavCarActivity extends Activity {
                     public void run() {
                         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.routeView);
                         linearLayout.setVisibility(View.VISIBLE);
-                        MarkerInfoWindow infoWindow1 = new MarkerInfoWindow(R.layout.destination_info, map);
                         mRoadNodeMarkers = new FolderOverlay();
                         mRoadNodeMarkers.setName("Road Steps");
                         map.getOverlays().add(mRoadNodeMarkers);
                         mRoadNodeMarkers.getItems().clear();
-                        Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_node, null);
                         int n;
                         if (roadManagerForOSRM != null) {
-                            assert road != null;
-                            n = road.allTurningPointsOfRoadPoints.size();
-                        } else {
                             assert road2 != null;
-                            n = road2.mNodes.size();
+                            n = road2.allTurningPointsOfRoadPoints.size();
+                        } else {
+                            assert road != null;
+                            n = road.mNodes.size();
                         }
-                        MarkerInfoWindow infoWindow = new MarkerInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map);
-                        for (int i = 0; i < n; i++) {
+                        for (int i = 0; i < n; i++)
+                        {
                             RoadNode node;
                             if (roadManagerForOSRM != null) {
-                                assert road != null;
-                                node = road.allTurningPointsOfRoadPoints.get(i);
-                            } else {
                                 assert road2 != null;
-                                node = road2.mNodes.get(i);
+                                node = road2.allTurningPointsOfRoadPoints.get(i);
+                            } else {
+                                assert road != null;
+                                node = road.mNodes.get(i);
                             }
-                            String instructions = (node.mInstructions == null ? "" : node.mInstructions);
-                            Marker nodeMarker = new Marker(map);
-                            nodeMarker.setTitle(getString(R.string.step) + " " + (i + 1));
-                            nodeMarker.setSnippet(instructions);
-                            nodeMarker.setSubDescription(RoadDescription.getLenAndDurAsString(context, node.mLength, node.mDuration));
-                            nodeMarker.setPosition(node.mLocation);
-                            nodeMarker.setIcon(icon);
-                            nodeMarker.setInfoWindow(infoWindow);
-                            Drawable destinationIcon = RoadDescription.chooseIconForManeuver(node.mManeuverType, context);
-                            nodeMarker.setImage(destinationIcon);
-                            mRoadNodeMarkers.add(nodeMarker);
+                           fillNodeRoadInfo(i,node);
                         }
                         routeInfo.setText(RoadDescription.getLenAndDurAsString(context, lengthOfRoad, duration));
                         map.getOverlays().add(mRoadNodeMarkers);
@@ -231,26 +106,4 @@ public class NavCarActivity extends Activity {
             }
         }).start();
     }
-
-    public void BtnTrackingModeOnClick(View view) {
-        MyLocationNewOverlay myLocationNewOverlay = new MyLocationNewOverlay(map);
-        myLocationNewOverlay.enableFollowLocation();
-        myLocationNewOverlay.enableMyLocation();
-        map.getOverlayManager().add(myLocationNewOverlay);
-        mapController.setZoom(14);
-        if (myLocationNewOverlay.getMyLocation() != null)
-            mapController.setCenter(myLocationNewOverlay.getMyLocation());
-
-    }
-
-    public void addMarker(GeoPoint center) {
-        Marker marker = new Marker(map);
-        marker.setPosition(center);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        marker.setIcon(getResources().getDrawable(R.drawable.navigation));
-        map.getOverlays().clear();
-        map.getOverlays().add(marker);
-        map.invalidate();
-    }
-
 }

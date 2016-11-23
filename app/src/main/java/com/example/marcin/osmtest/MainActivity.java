@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     IMapController mapController;
 
 
+
+
     private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
     private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
 
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         OpenStreetMapTileProviderConstants.setCachePath(this.getFilesDir().getAbsolutePath());

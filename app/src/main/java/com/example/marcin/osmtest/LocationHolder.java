@@ -5,18 +5,18 @@ import android.location.LocationListener;
 import android.os.Bundle;
 
 /**
- * Created by Marcin on 20.11.2016.
+ * Created by Marcin on 23.11.2016.
  */
 
-public class LocationTracker implements LocationListener {
+public class LocationHolder implements LocationListener {
 
-    public LocationTracker() {
-
-    }
-
+    public static Location location = new Location("");
     @Override
-    public void onLocationChanged(Location location) {
+    public void onLocationChanged(Location loc) {
+        if(loc != null) {
+            location = loc;
 
+        }
     }
 
     @Override
@@ -26,11 +26,11 @@ public class LocationTracker implements LocationListener {
 
     @Override
     public void onProviderEnabled(String s) {
-
+        System.out.println("GPS" + "Provider enabled");
     }
 
     @Override
     public void onProviderDisabled(String s) {
-
+        System.out.println("GPS" + "Provider disabled");
     }
 }

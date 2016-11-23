@@ -67,7 +67,7 @@ import java.util.ArrayList;
     {
         if(direction.equals("end of road") || direction.equals("use lane") || direction.equals("roundabout turn") || direction.equals("notification"))
         {
-            return 0;
+            return ManeuverType.valueOf("newname").getValue();
         }
         ManeuverType maneuverType = ManeuverType.valueOf(direction);
         int codeOfManeuverType = maneuverType.getValue();
@@ -209,7 +209,7 @@ import java.util.ArrayList;
     }
 
 
-     private static String getDirectionInstruction(int manewr, String nameOfRoad){
+     private String getDirectionInstruction(int manewr, String nameOfRoad){
         String direction = RoadDescription.DIRECTIONS.get(manewr);
         if (direction == null)
         {

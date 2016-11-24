@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -64,7 +65,8 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     Marker positionMarker = null;
     RoadNode nextNode = null;
     RoadNode previousNode = null;
-    List<RoadNode> listOfRoadNodes = new ArrayList<>();
+    static List<RoadNode> listOfRoadNodes = new ArrayList<>();
+    android.support.v7.widget.Toolbar toolbar;
 
     double lon;
     double lat;
@@ -100,7 +102,8 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         ((MapBoxTileSource) MAPBOXSATELLITELABELLED).retrieveMapBoxMapId(this);
         TileSourceFactory.addTileSource(MAPBOXSATELLITELABELLED);
 
-        android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar2);
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar2);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         map = (MapView) findViewById(R.id.map);
@@ -201,6 +204,12 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
             case R.id.historia:
             {
                 Intent goToIntent = new Intent(this, HistoryActivity.class);
+                startActivity(goToIntent);
+                break;
+            }
+            case R.id.listOfRoadStep:
+            {
+                Intent goToIntent = new Intent(this, ItemRoadStepActivity.class);
                 startActivity(goToIntent);
                 break;
             }
@@ -319,5 +328,17 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
             return true;
         }
         return false;
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            toolbar.setVisibility(View.GONE);
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            toolbar.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -9,14 +9,14 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AddressesDataSource {
+class AddressesDataSource {
 
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
             MySQLiteHelper.COLUMN_ADDRES, MySQLiteHelper.COLUMN_LATITUDE, MySQLiteHelper.COLUMN_LONGITUDE};
 
-    public AddressesDataSource(Context context) {
+    AddressesDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
     }
 
@@ -24,33 +24,40 @@ public class AddressesDataSource {
         database = dbHelper.getWritableDatabase();
     }
 
-    public void close() {
+    void close() {
         dbHelper.close();
     }
 
-    public DatabaseAddress createDatabaseAddress(String address, double latitude, double longitude) {
+    DatabaseAddress createDatabaseAddress(String address, double latitude, double longitude) {
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_ADDRES, address);
-        values.put(MySQLiteHelper.COLUMN_LATITUDE, latitude);
-        values.put(MySQLiteHelper.COLUMN_LONGITUDE, longitude);
-        long insertId = database.insert(MySQLiteHelper.TABLE_ADDRESSES, null,
-                values);
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_ADDRESSES,
-                allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
-                null, null, null);
-        cursor.moveToFirst();
-        DatabaseAddress newDatabaseAddress = cursorToAddresses(cursor);
-        cursor.close();
-        return newDatabaseAddress;
+        if(verification(address))
+        {
+            return null;
+        }
+        else
+        {
+            values.put(MySQLiteHelper.COLUMN_ADDRES, address);
+            values.put(MySQLiteHelper.COLUMN_LATITUDE, latitude);
+            values.put(MySQLiteHelper.COLUMN_LONGITUDE, longitude);
+            long insertId = database.insert(MySQLiteHelper.TABLE_ADDRESSES, null,
+                    values);
+            Cursor cursor = database.query(MySQLiteHelper.TABLE_ADDRESSES,
+                    allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
+                    null, null, null);
+            cursor.moveToFirst();
+            DatabaseAddress newDatabaseAddress = cursorToAddresses(cursor);
+            cursor.close();
+            return newDatabaseAddress;
+        }
     }
 
-    public void deleteAddressInDatabase(DatabaseAddress address) {
+    void deleteAddressInDatabase(DatabaseAddress address) {
         long id = address.getId();
         database.delete(MySQLiteHelper.TABLE_ADDRESSES, MySQLiteHelper.COLUMN_ID
                 + " = " + id, null);
     }
 
-    public Set<DatabaseAddress> getAllAddressesFromDatabase() {
+    Set<DatabaseAddress> getAllAddressesFromDatabase() {
         Set<DatabaseAddress> addresses = new HashSet<>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_ADDRESSES,
@@ -74,5 +81,24 @@ public class AddressesDataSource {
         address.setLatitude(cursor.getDouble(2));
         address.setLongitude(cursor.getDouble(3));
         return address;
+    }
+
+    private boolean verification(String address) throws SQLException {
+        int count = -1;
+        Cursor c = null;
+        try {
+            String query = "SELECT COUNT(*) FROM "
+                    + MySQLiteHelper.TABLE_ADDRESSES + " WHERE " + MySQLiteHelper.COLUMN_ADDRES + " = ?";
+            c = database.rawQuery(query, new String[] {address});
+            if (c.moveToFirst()) {
+                count = c.getInt(0);
+            }
+            return count > 0;
+        }
+        finally {
+            if (c != null) {
+                c.close();
+            }
+        }
     }
 }

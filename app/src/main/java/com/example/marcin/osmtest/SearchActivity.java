@@ -100,30 +100,35 @@ public class SearchActivity extends AppCompatActivity {
                 {
                     StringBuilder sb = new StringBuilder();
                     String adressInfo;
-
-                    if (address.getMaxAddressLineIndex() == 0) {
-                        if(address.getSubAdminArea() == null)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            adressInfo = address.getCountryName() + ", " + address.getSubAdminArea();
-                            sb.append(adressInfo);
-                        }
-
-                    } else {
-                        for (int a = 0; a < address.getMaxAddressLineIndex() + 1; a++) {
-                            adressInfo = address.getAddressLine(a);
-                            if (a == address.getMaxAddressLineIndex()) {
-
+                    String addressName;
+                    String displayName = (String) address.getExtras().get("display_name");
+                    if(displayName == null) {
+                        if (address.getMaxAddressLineIndex() == 0) {
+                            if (address.getSubAdminArea() == null) {
+                                break;
                             } else {
-                                adressInfo += ", ";
+                                adressInfo = address.getCountryName() + ", " + address.getSubAdminArea();
+                                sb.append(adressInfo);
                             }
-                            sb.append(adressInfo);
+
+                        } else {
+                            for (int a = 0; a < address.getMaxAddressLineIndex() + 1; a++) {
+                                adressInfo = address.getAddressLine(a);
+                                if (a == address.getMaxAddressLineIndex()) {
+
+                                } else {
+                                    adressInfo += ", ";
+                                }
+                                sb.append(adressInfo);
+                            }
                         }
+                        addressName = sb.toString();
                     }
-                    String addressName = sb.toString();
+                    else
+                    {
+                        addressName = displayName;
+                    }
+
                     addressArrayAdapter.add(addressName);
                     addressesMap.put(addressName, address);
                 }

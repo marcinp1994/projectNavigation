@@ -8,14 +8,13 @@ import android.os.Bundle;
  * Created by Marcin on 23.11.2016.
  */
 
-public class LocationHolder implements LocationListener {
+class LocationHolder implements LocationListener {
 
     public static Location location = new Location("");
     @Override
     public void onLocationChanged(Location loc) {
         if(loc != null) {
             location = loc;
-
         }
     }
 

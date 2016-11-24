@@ -10,10 +10,16 @@
     <item android:id="@+id/satelita"
         app:showAsAction="never"
         android:title="Satelita" />
+    <item
+        android:id="@+id/listOfRoadStep"
+        app:showAsAction="ifRoom"
+        android:title=""
+        android:icon="@android:drawable/ic_menu_agenda"
+        />
     <item android:id="@+id/historia"
         app:showAsAction="ifRoom"
         android:title="Historia">
-
     </item>
+
 
 </menu>

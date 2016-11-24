@@ -1,6 +1,7 @@
 package com.example.marcin.osmtest;
 
 import android.location.Address;
+import android.os.Bundle;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,9 +15,9 @@ import java.util.Locale;
  * Created by Marcin on 20.11.2016.
  */
 
-public class AddressFromName {
+class AddressFromName {
 
-    public static final String SERVICE_URL = "http://nominatim.openstreetmap.org/";
+    private static final String SERVICE_URL = "http://nominatim.openstreetmap.org/";
 
 
     private String buildHTTPURL(String location, int numberOfResults, String keyForMapQuest)
@@ -31,7 +32,7 @@ public class AddressFromName {
 
 
 
-    public ArrayList<Address> getFromLocationName(String locationName, int numberOfResults, String keyForMapQuest)
+    ArrayList<Address> getFromLocationName(String locationName, int numberOfResults, String keyForMapQuest)
     {
         String httpUrl = buildHTTPURL(locationName, numberOfResults,keyForMapQuest);
         String responseAsString = ConnectionHelper.getResponseStringFromUrl(httpUrl,"navigationGPSv1");
@@ -92,7 +93,14 @@ public class AddressFromName {
                         }
                         if (jAddress.has("country_code"))
                             address.setCountryCode(jAddress.getString("country_code"));
-                        
+
+                        Bundle extras = new Bundle();
+                        if (jsonAddress.has("display_name")){
+                            String display_name = jsonAddress.getString("display_name");
+                            extras.putString("display_name", display_name);
+                        }
+                        address.setExtras(extras);
+
                         listOfAddresses.add(address);
                     }
                 }

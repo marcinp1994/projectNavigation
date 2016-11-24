@@ -18,7 +18,6 @@ public class NavBikeActivity extends NavActivity {
     }
 
     public void onAddressRecived(double longitude, double latitude) {
-        System.out.println(longitude + "dupa" + latitude);
         GeoPoint endPoint = new GeoPoint(latitude, longitude);
         Marker endMarker = new Marker(map);
         endMarker.setPosition(endPoint);

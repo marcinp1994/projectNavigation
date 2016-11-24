@@ -22,5 +22,13 @@
     <item android:id="@+id/history"
         android:title="Historia"
         app2:showAsAction="ifRoom" />
+    <item android:id="@+id/night_mode"
+        app:showAsAction="never"
+        android:title="Tryb nocny"
+        />
+    <item android:id="@+id/pois"
+        app:showAsAction="never"
+        android:title="Dodaj POI"
+        />
 
 </menu>

@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.location.NominatimPOIProvider;
+import org.osmdroid.bonuspack.location.POI;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.bonuspack.routing.RoadNode;
@@ -61,13 +63,14 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     Drawable icon;
     MarkerInfoWindow infoWindow;
     protected static final int REQUEST_CHECK_SETTINGS = 0x99;
-
+    protected static final int REQUEST_POI = 9;
+    GeoPoint startPoint;
     Marker positionMarker = null;
     RoadNode nextNode = null;
     RoadNode previousNode = null;
     static List<RoadNode> listOfRoadNodes = new ArrayList<>();
     android.support.v7.widget.Toolbar toolbar;
-
+    String poi;
     double lon;
     double lat;
 
@@ -78,9 +81,8 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     {
         super.onCreate(savedInstanceState);
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-           locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, this);
-        }
+
+
 
 
         //GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
@@ -143,7 +145,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     }
 
     private void setStartPoint(Location location) {
-        GeoPoint startPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+        startPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
         mapController.setCenter(startPoint);
         Marker startMarker = new Marker(map);
         startMarker.setPosition(startPoint);
@@ -154,7 +156,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         map.getOverlays().add(startMarker);
         waypoints.add(startPoint);
 
-        System.out.println("startPoint:" + location.getLatitude() + " / " + location.getLongitude());
+       // System.out.println("startPoint:" + location.getLatitude() + " / " + location.getLongitude());
     }
 
     public void onAddressRecived(double longitude, double latitude) {
@@ -213,6 +215,18 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
                 startActivity(goToIntent);
                 break;
             }
+            case R.id.poi:
+            {
+                Intent goToIntent = new Intent(this, POIActivity.class);
+                startActivityForResult(goToIntent, REQUEST_POI);
+                break;
+            }
+            case R.id.poi_menu:
+            {
+                Intent goToIntent = new Intent(this, POIActivity.class);
+                startActivityForResult(goToIntent, REQUEST_POI);
+                break;
+            }
 
         }
         return super.onOptionsItemSelected(item);
@@ -269,7 +283,16 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
                 onAddressRecived(lon, lat);
             }
         }
+        else if(requestCode == REQUEST_POI)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                poi = data.getStringExtra("poi");
+                showPOIOnMap();
+            }
+        }
     }
+
 
     private void addMarker(GeoPoint center) {
         if(positionMarker != null) {
@@ -341,4 +364,22 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
             toolbar.setVisibility(View.VISIBLE);
         }
     }
+
+    private void showPOIOnMap() {
+        NominatimPOIProvider poiProvider = new NominatimPOIProvider("navigationGPSv1");
+        ArrayList<POI> pois = poiProvider.getPOICloseTo(startPoint, poi, 50, 0.2);
+        FolderOverlay poiMarkers = new FolderOverlay(context);
+        map.getOverlays().add(poiMarkers);
+        Drawable poiIcon = getResources().getDrawable(R.drawable.poismarkers);
+        for (POI poi:pois)
+        {
+            Marker poiMarker = new Marker(map);
+            poiMarker.setSnippet(poi.mDescription);
+            poiMarker.setPosition(poi.mLocation);
+            poiMarker.setIcon(poiIcon);
+            poiMarkers.add(poiMarker);
+        }
+        map.invalidate();
+    }
+
 }

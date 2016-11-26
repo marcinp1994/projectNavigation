@@ -3,12 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- "Mark Favorite", should appear as action button if possible -->
-    <item
-        android:id="@+id/show_my_location"
-        app:showAsAction="never"
-        android:title="Moja lokalizacja"
-        android:icon="@drawable/ic_location"/>
 
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/nav_car"

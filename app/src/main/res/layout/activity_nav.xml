@@ -56,6 +56,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <Button
+                android:id="@+id/startNavigation"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="0dp"
+                android:background="@mipmap/nav"
+                android:onClick="startNavigationOnClick"/>
+
+            <Button
+                android:id="@+id/centered"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="0dp"
+                android:background="@drawable/wysrodkuj"
+                android:onClick="centeredOnClick"
+                android:visibility="invisible"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+
 
         </RelativeLayout>
 

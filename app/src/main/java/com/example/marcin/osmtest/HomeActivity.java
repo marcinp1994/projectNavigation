@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +45,11 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(locationProvider, 2000, 10, new LocationHolder());
         client = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .build();
@@ -64,15 +70,18 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void startLocationUpdates() {
+    private void startLocationUpdates()
+    {
         Location location = null;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location == null) {
+            if (location == null)
+            {
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             }
         }
-        if (location != null) {
+        if (location != null)
+        {
             LocationHolder.location = location;
         }
     }

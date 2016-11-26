@@ -33,13 +33,16 @@ import java.util.ArrayList;
 import static com.example.marcin.osmtest.LocationHolder.location;
 import static com.example.marcin.osmtest.NavActivity.REQUEST_POI;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity extends AppCompatActivity {
     MapView map;
     Context context;
     IMapController mapController;
     Marker positionMarker = null;
     String poi;
     GeoPoint myPosition;
+    Location lastKnownLocation = null;
+    Location location1;
+    LocationListener locationListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,10 +58,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, this);
-        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         final Button navButton = (Button) findViewById(R.id.nav);
@@ -91,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         });
 
+
     }
 
     @Override
@@ -118,12 +118,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 startActivity(goToIntent);
                 break;
             }
-            case R.id.nav:
-            {
-                myPosition = new GeoPoint(location.getLatitude(), location.getLongitude());
-                addMarker(myPosition);
-                break;
-            }
             case R.id.night_mode:
             {
                 map.getOverlayManager().getTilesOverlay().setColorFilter(TilesOverlay.INVERT_COLORS);
@@ -140,9 +134,72 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         return super.onOptionsItemSelected(item);
     }
 
-    public void showPositionOnClick(View view) {
-        myPosition = new GeoPoint(location.getLatitude(), location.getLongitude());
-        addMarker(myPosition);
+    public void showPositionOnClick(View view)
+    {
+
+        if(location != null)
+        {
+            myPosition = new GeoPoint(location.getLatitude(), location.getLongitude());
+            mapController.setCenter(myPosition);
+            addMarker(myPosition);
+            map.invalidate();
+
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            String locationProvider = LocationManager.GPS_PROVIDER;
+            locationListener = new LocationListener() {
+                public void onLocationChanged(Location location)
+                {
+                    myPosition = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    addMarker(myPosition);
+                    map.invalidate();
+                }
+
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+                public void onProviderEnabled(String provider) {}
+
+                public void onProviderDisabled(String provider) {}
+            };
+            locationManager.requestLocationUpdates(locationProvider, 1000, 5, locationListener);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (lastKnownLocation == null) {
+                    lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                }
+            }
+
+        }
+        else
+        {
+            myPosition = new GeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            addMarker(myPosition);
+            map.invalidate();
+
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            String locationProvider = LocationManager.GPS_PROVIDER;
+            locationListener = new LocationListener() {
+                public void onLocationChanged(Location location)
+                {
+                    myPosition = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    addMarker(myPosition);
+                    map.invalidate();
+                }
+
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+                public void onProviderEnabled(String provider) {}
+
+                public void onProviderDisabled(String provider) {}
+            };
+            locationManager.requestLocationUpdates(locationProvider,0,0, locationListener);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (lastKnownLocation == null) {
+                    lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                }
+            }
+        }
+
     }
 
     public void bikeOnClick(View view) {
@@ -161,38 +218,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         positionMarker = new Marker(map);
         positionMarker.setPosition(center);
-        positionMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        positionMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         positionMarker.setIcon(getResources().getDrawable(R.drawable.runningpoint));
         map.getOverlays().add(positionMarker);
         mapController.setCenter(center);
         mapController.animateTo(center);
-        mapController.setZoom(18);
         map.invalidate();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if(location!= null)
-        {
-            myPosition = new GeoPoint(location.getLatitude(), location.getLongitude());
-            addMarker(myPosition);
-            System.out.println(location.getLatitude() + " dfsdf");
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
     }
 
     @Override
@@ -224,4 +255,5 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         map.invalidate();
     }
+
 }

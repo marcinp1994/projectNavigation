@@ -25,7 +25,8 @@ public class NavCarActivity extends NavActivity {
         return 2;
     }
 
-    public void onAddressRecived(double longitude, double latitude) {
+    @Override
+    public void onAddressRecived(double latitude, double longitude) {
         String osrmOrMapQuest = getOsrmOrMapquest();
         if (osrmOrMapQuest.equals("OSRM")) {
             roadManagerForOSRM = new RoutingByOSRM(this);
@@ -34,7 +35,7 @@ public class NavCarActivity extends NavActivity {
 
         }
 
-        GeoPoint endPoint = new GeoPoint(latitude, longitude);
+        endPoint = new GeoPoint(latitude, longitude);
         Marker endMarker = new Marker(map);
         endMarker.setPosition(endPoint);
         endMarker.setIcon(getResources().getDrawable(R.drawable.end));
@@ -58,7 +59,6 @@ public class NavCarActivity extends NavActivity {
                         Toast.makeText(context, "Error when loading the road2 - status=" + road2.roadStatus, Toast.LENGTH_SHORT).show();
 
                     roadOverlay = RoadDescription.buildRoadOverlay(road2, Color.BLUE, 10);
-                    map.getOverlays().add(roadOverlay);
                 } else {
                     road = roadManagerForMapQuest.getRoad(waypoints);
                     lengthOfRoad = roadManagerForMapQuest.getRoad(waypoints).mLength;
@@ -67,8 +67,10 @@ public class NavCarActivity extends NavActivity {
                         Toast.makeText(context, "Error when loading the road2 - status=" + road.mStatus, Toast.LENGTH_SHORT).show();
 
                     roadOverlay = RoadManager.buildRoadOverlay(road, Color.BLUE, 10);
-                    map.getOverlays().add(roadOverlay);
                 }
+
+                map.getOverlays().add(roadOverlay);
+                roadPolyline = roadOverlay;
 
                 runOnUiThread(new Runnable() {
                     public void run() {
@@ -101,6 +103,8 @@ public class NavCarActivity extends NavActivity {
                         routeInfo.setText(RoadDescription.getLenAndDurAsString(context, lengthOfRoad, duration));
                         map.getOverlays().add(mRoadNodeMarkers);
                         map.invalidate();
+
+//                        startLocationListener();
                     }
                 });
             }

@@ -12,8 +12,10 @@ class LocationHolder implements LocationListener {
 
     public static Location location = new Location("");
     @Override
-    public void onLocationChanged(Location loc) {
-        if(loc != null) {
+    public void onLocationChanged(Location loc)
+    {
+        if(loc != null)
+        {
             location = loc;
         }
     }

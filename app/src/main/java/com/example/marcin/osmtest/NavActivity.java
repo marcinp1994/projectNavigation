@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.hardware.SensorListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -84,6 +86,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     private static long previousTime = 0;
     private float time = 0;
     private float distance = 0;
+    SensorManager sensorManager;
 
     public abstract int getRequestCode();
 
@@ -102,6 +105,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
 
         //Introduction
         setContentView(R.layout.activity_nav);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         MAPBOXSATELLITELABELLED = new MapBoxTileSource("MapBoxSatelliteLabelled", 1, 19, 256, ".png");
         ((MapBoxTileSource) MAPBOXSATELLITELABELLED).retrieveAccessToken(this);
@@ -111,6 +115,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar2);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        context = this;
 
         final Button startNavigation = (Button)findViewById(R.id.startNavigation);
         final Button centered = (Button)findViewById(R.id.centered);
@@ -131,6 +136,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
                 mapController.setCenter(startPoint);
                 mapController.animateTo(startPoint);
                 mapController.setZoom(18);
+
             }
         });
 
@@ -155,7 +161,6 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         compassOverlay.enableCompass();
         map.getOverlays().add(compassOverlay);
 
-        context = this;
         routeInfo = (TextView) findViewById(R.id.routeInfo);
 
         setStartPoint(location);
@@ -171,6 +176,30 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         } else {
             onAddressRecived(lat, lon);
         }
+
+         SensorListener mySensorEventListener = new SensorListener(){
+
+            @Override
+            public void onSensorChanged(int sensor, float[] values) {
+                synchronized (this) {
+                    float mHeading = values[0];
+                    map.setMapOrientation(-mHeading);
+                }
+            }
+
+             @Override
+             public void onAccuracyChanged(int i, int i1)
+             {
+                    myLocation.setAccuracy(i1);
+                 map.invalidate();
+             }
+         };
+        sensorManager.registerListener(mySensorEventListener,
+                SensorManager.SENSOR_ORIENTATION,
+                SensorManager.SENSOR_DELAY_UI);
+
+
+
     }
 
     private void setStartPoint(Location location) {
@@ -383,16 +412,20 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        if(location != null) {
+    public void onLocationChanged(Location location)
+    {
+        if(location != null)
+        {
             myLocation = location;
             GeoPoint locationPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
 
-            if(roadPolyline.getPoints() != null && roadPolyline.getPoints().size() > 0 && !roadPolyline.isCloseTo(locationPoint, 200, map)) {
+
+            if(roadPolyline!= null && roadPolyline.getPoints() != null && roadPolyline.getPoints().size() > 0 && !roadPolyline.isCloseTo(locationPoint, 200, map))
+            {
                 recalculateRoad();
             }
 
-            GeoPoint closestPoint = roadPolyline.getPoints().get(0);
+//            GeoPoint closestPoint = roadPolyline.getPoints().get(0);
 //            float closestPointDistance = locationPoint.distanceTo(closestPoint);
 //            for(GeoPoint roadPoint : roadPolyline.getPoints()) {
 //                float distance = locationPoint.distanceTo(roadPoint);
@@ -482,15 +515,17 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
             String lengthText = RoadDescription.getLenAndDurAsString(NavBikeActivity.context, NavActivity.lengthOfRoad, NavActivity.duration);
             String speedText = "";
             if(time > 0) {
-                float speed = Math.round(distance / time * 3.6f * 10f) / 10f;
+               // float speed = Math.round(distance / time * 3.6f * 10f) / 10f;
                 float locationSpeed = Math.round(currentLocation.getSpeed() * 3.6f * 10f) / 10f;
-                speedText = String.valueOf(speed) + " km/h, " + String.valueOf(locationSpeed);
+                speedText =  String.valueOf(locationSpeed) + " km/h";
                 //Toast.makeText(NavActivity.context, String.valueOf(time), Toast.LENGTH_LONG).show();
             }
 
            // NavActivity.routeInfo.setTextColor(0xFF0000);
-            NavActivity.routeInfo.setText(lengthText + "\n                " + speedText);
+            NavActivity.routeInfo.setText(lengthText + "\n                             " + speedText);
         }
     }
+
+
 
 }

@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.location;
 
 import android.Manifest;
 import android.app.Service;

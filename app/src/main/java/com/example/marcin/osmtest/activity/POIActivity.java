@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.example.marcin.osmtest.R;
+import com.example.marcin.osmtest.database.AddressesDataSource;
 
 import java.util.ArrayList;
 import java.util.List;

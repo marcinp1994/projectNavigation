@@ -1,8 +1,9 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.routing;
 
 import android.content.Context;
 import android.util.Log;
 
+import com.example.marcin.osmtest.utils.ConnectionHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -16,20 +17,23 @@ import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 
+import static com.example.marcin.osmtest.utils.ConnectionHelper.LOG;
+
+
 /**
  * Created by Marcin on 11.11.2016.
  * Klasa pobiera droge pomiedzy dwona wybranymi punktami. Wykorzystuje OSRM czyli ,
  * open-source darmowy routing-service który bazuje na danych z OpenStreetMap.
  * It requests by default the OSRM demo site.
  */
- class RoutingByOSRM {
+public class RoutingByOSRM {
 
     private static final String HTTP_OSRM_ROUTING_URL = "http://router.project-osrm.org/route/v1/driving/";
     private static final String ResponseCodeOK = "Ok";
     private String allServiceUrl;
     private String userAgent;
 
-     RoutingByOSRM(Context context)
+    public RoutingByOSRM(Context context)
     {
         allServiceUrl = HTTP_OSRM_ROUTING_URL;
         userAgent = ConnectionHelper.DEFAULT_USER_AGENT;
@@ -81,11 +85,11 @@ import java.util.ArrayList;
     private ArrayList<RoadDescription> getRoads(ArrayList<GeoPoint> waypoints, boolean getAlternate)
     {
         String url = getHTTPUrl(waypoints, getAlternate);
-        Log.d(ConnectionHelper.LOG, "RoutingUrlOSRM" + url);
+        Log.d(LOG, "RoutingUrlOSRM" + url);
         String jsonResponseAsString = getJsonResponseAsString(url, userAgent);
         if (jsonResponseAsString == null)
         {
-            Log.e(ConnectionHelper.LOG, "RoutingByOSRM:getRoad: Getting response from http requset is failed!.");
+            Log.e(LOG, "RoutingByOSRM:getRoad: Getting response from http requset is failed!.");
             ArrayList<RoadDescription> roads = new ArrayList<>();
             roads.add(new RoadDescription(waypoints));
             roads.get(0).roadStatus = ResponseStatus.INVALID.getValue();
@@ -96,7 +100,7 @@ import java.util.ArrayList;
         JsonElement responseStatus = responseAsJSONObject.get("code");
         if(responseStatus.getAsString().equals(ResponseCodeOK)==false)
         {
-            Log.e(ConnectionHelper.LOG,"RoutingByOSRM.getRoad: error=" + responseStatus);
+            Log.e(LOG, "RoutingByOSRM.getRoad: error=" + responseStatus);
             ArrayList<RoadDescription> roads = new ArrayList<>();
             roads.add(new RoadDescription(waypoints));
             if ("NoRoute".equals(responseStatus.getAsString()))
@@ -197,12 +201,12 @@ import java.util.ArrayList;
                     }
                 }
             }
-            Log.d(ConnectionHelper.LOG, "RoutingByOSRM.getRoads - finished");
+            Log.d(LOG, "RoutingByOSRM.getRoads - finished");
             return roads;
         }
     }
 
-     RoadDescription getRoad(ArrayList<GeoPoint> waypoints)
+    public RoadDescription getRoad(ArrayList<GeoPoint> waypoints)
      {
         ArrayList<RoadDescription> roads = getRoads(waypoints, false);
         return roads.get(0);

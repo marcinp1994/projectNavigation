@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.utils;
 
 import android.os.AsyncTask;
 
@@ -6,15 +6,15 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static com.example.marcin.osmtest.HTTPConnectionToRemoteServer.convertStream;
-import static com.example.marcin.osmtest.HTTPConnectionToRemoteServer.responseFromOSRM;
-import static com.example.marcin.osmtest.HTTPConnectionToRemoteServer.statusResponse;
-import static com.example.marcin.osmtest.HTTPConnectionToRemoteServer.userAgent;
+import static com.example.marcin.osmtest.utils.HTTPConnectionToRemoteServer.convertStream;
+import static com.example.marcin.osmtest.utils.HTTPConnectionToRemoteServer.responseFromOSRM;
+import static com.example.marcin.osmtest.utils.HTTPConnectionToRemoteServer.statusResponse;
+import static com.example.marcin.osmtest.utils.HTTPConnectionToRemoteServer.userAgent;
 
 /**
  * Created by Marcin on 18.11.2016.
  */
-class HttpConnectionAsyncTask extends AsyncTask<String,Void,String>
+public class HttpConnectionAsyncTask extends AsyncTask<String, Void, String>
 {
     String httpUrl;
     public HttpConnectionAsyncTask(String httpUrl)

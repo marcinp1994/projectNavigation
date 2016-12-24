@@ -1,7 +1,9 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.routing;
 
 import android.location.Address;
 import android.os.Bundle;
+
+import com.example.marcin.osmtest.utils.ConnectionHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,11 +17,9 @@ import java.util.Locale;
  * Created by Marcin on 20.11.2016.
  */
 
-class AddressFromName {
+public class AddressFromName {
 
     private static final String SERVICE_URL = "http://nominatim.openstreetmap.org/";
-
-
     private String buildHTTPURL(String location, int numberOfResults, String keyForMapQuest)
     {
         StringBuffer httpURLString = new StringBuffer(SERVICE_URL);
@@ -31,8 +31,7 @@ class AddressFromName {
     }
 
 
-
-    ArrayList<Address> getFromLocationName(String locationName, int numberOfResults, String keyForMapQuest)
+    public ArrayList<Address> getFromLocationName(String locationName, int numberOfResults, String keyForMapQuest)
     {
         String httpUrl = buildHTTPURL(locationName, numberOfResults,keyForMapQuest);
         String responseAsString = ConnectionHelper.getResponseStringFromUrl(httpUrl,"navigationGPSv1");

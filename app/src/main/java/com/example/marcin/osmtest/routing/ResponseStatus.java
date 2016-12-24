@@ -1,6 +1,6 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.routing;
 
-enum ResponseStatus
+public enum ResponseStatus
 {
     OK(0),
     INVALID(-1),

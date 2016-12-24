@@ -1,8 +1,11 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.location;
 
 import android.graphics.Color;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.example.marcin.osmtest.R;
+import com.example.marcin.osmtest.routing.RoadDescription;
 
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -33,7 +36,7 @@ public class NavBikeActivity extends NavActivity
 
         new Thread(new Runnable() {
             public synchronized void run() {
-                roadManagerForMapQuest = new GraphHopperRoadManager("AMFmC5P8s958tcjfFRJmefNboJ5H0HN6PLFyvdm3",false);
+                roadManagerForMapQuest = new GraphHopperRoadManager("0eb4be66-eda0-468e-a5e2-bcdeea1d1c98", false);
                 roadManagerForMapQuest.addRequestOption("locale=pl");
                 roadManagerForMapQuest.addRequestOption("vehicle=bike");
                 road = roadManagerForMapQuest.getRoad(waypoints);
@@ -61,7 +64,7 @@ public class NavBikeActivity extends NavActivity
                             node = road.mNodes.get(i);
                             fillNodeRoadInfo(i, node);
                         }
-                        routeInfo.setText(RoadDescription.getLenAndDurAsString(context, lengthOfRoad, duration));
+                        routeInfo.setText(RoadDescription.getLenAndDurAsString(context, lengthOfRoad, duration, true));
                         map.getOverlays().add(mRoadNodeMarkers);
                         map.invalidate();
 

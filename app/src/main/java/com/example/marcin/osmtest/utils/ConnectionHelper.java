@@ -1,19 +1,19 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.utils;
 
 /**
  * Created by Marcin on 11.11.2016.
  */
 
-class ConnectionHelper
+public class ConnectionHelper
 {
-     static final String LOG = "NAVIGATIONGPS";
-     static final String DEFAULT_USER_AGENT = "navigationgps1";
+    public static final String LOG = "NAVIGATIONGPS";
+    public static final String DEFAULT_USER_AGENT = "navigationgps1";
      static String requestOption;
 
     /**
      *  Zwraca response jako string lub null jesli wystapił blad.
      */
-    static String getResponseStringFromUrl(String url, String userAgent)
+    public static String getResponseStringFromUrl(String url, String userAgent)
     {
         HTTPConnectionToRemoteServer connection = new HTTPConnectionToRemoteServer();
         if (userAgent != null)

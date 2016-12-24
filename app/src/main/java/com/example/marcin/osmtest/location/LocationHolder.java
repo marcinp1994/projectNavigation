@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.location;
 
 import android.location.Location;
 import android.location.LocationListener;
@@ -8,7 +8,7 @@ import android.os.Bundle;
  * Created by Marcin on 23.11.2016.
  */
 
-class LocationHolder implements LocationListener {
+public class LocationHolder implements LocationListener {
 
     public static Location location = new Location("");
     @Override

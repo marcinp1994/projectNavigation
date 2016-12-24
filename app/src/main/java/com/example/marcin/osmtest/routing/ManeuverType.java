@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.routing;
 
 /**
  * Created by Marcin on 13.11.2016.

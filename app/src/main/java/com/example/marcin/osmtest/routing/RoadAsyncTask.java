@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.routing;
 
 import android.content.Context;
 import android.os.AsyncTask;

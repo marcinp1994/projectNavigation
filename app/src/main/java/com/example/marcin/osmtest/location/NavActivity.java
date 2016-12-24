@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.location;
 
 import android.Manifest;
 import android.content.Context;
@@ -24,6 +24,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.marcin.osmtest.BuildConfig;
+import com.example.marcin.osmtest.R;
+import com.example.marcin.osmtest.activity.HistoryActivity;
+import com.example.marcin.osmtest.activity.ItemRoadStepActivity;
+import com.example.marcin.osmtest.activity.POIActivity;
+import com.example.marcin.osmtest.activity.SearchActivity;
+import com.example.marcin.osmtest.routing.RoadDescription;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.location.NominatimPOIProvider;
 import org.osmdroid.bonuspack.location.POI;
@@ -48,31 +56,33 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.marcin.osmtest.LocationHolder.location;
+import static com.example.marcin.osmtest.location.LocationHolder.location;
 
-public abstract class NavActivity extends AppCompatActivity  implements LocationListener {
+public abstract class NavActivity extends AppCompatActivity implements LocationListener {
     public static final String keyForMapQuest = "ETefQk4KAr64RQryy3gD1tbwDZsqA0IX";
-
+    public static final int REQUEST_CHECK_SETTINGS = 0x99;
+    public static final int REQUEST_POI = 9;
+    public static double lengthOfRoad = 0;
+    public static double duration = 0;
+    public static TextView routeInfo;
+    public static Context context;
+    public static List<RoadNode> listOfRoadNodes = new ArrayList<>();
+    private static Location previousLocation = null;
+    private static long previousTime = 0;
+    final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
+    protected FolderOverlay mRoadNodeMarkers;
     OnlineTileSourceBase MAPBOXSATELLITELABELLED;
     MapView map;
-    static double lengthOfRoad = 0;
-    static double duration = 0;
-    protected FolderOverlay mRoadNodeMarkers;
-    static TextView routeInfo;
     ArrayList<GeoPoint> waypoints = new ArrayList<>();
-    static Context context;
     IMapController mapController;
     RoadManager roadManagerForMapQuest;
     Road road = null;
     Drawable icon;
     MarkerInfoWindow infoWindow;
-    protected static final int REQUEST_CHECK_SETTINGS = 0x99;
-    protected static final int REQUEST_POI = 9;
     GeoPoint startPoint;
     Marker positionMarker = null;
     RoadNode nextNode = null;
     RoadNode previousNode = null;
-    static List<RoadNode> listOfRoadNodes = new ArrayList<>();
     android.support.v7.widget.Toolbar toolbar;
     String poi;
     double lon;
@@ -81,18 +91,15 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     Location myLocation = LocationHolder.location;
     Polyline roadPolyline;
     GeoPoint endPoint;
-    private static Location previousLocation = null;
+    SensorManager sensorManager;
     private Location currentLocation = null;
-    private static long previousTime = 0;
     private float time = 0;
     private float distance = 0;
-    SensorManager sensorManager;
 
     public abstract int getRequestCode();
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -117,8 +124,9 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         setSupportActionBar(toolbar);
         context = this;
 
-        final Button startNavigation = (Button)findViewById(R.id.startNavigation);
-        final Button centered = (Button)findViewById(R.id.centered);
+
+        final Button startNavigation = (Button) findViewById(R.id.startNavigation);
+        final Button centered = (Button) findViewById(R.id.centered);
 
         startNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,8 +141,8 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         centered.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapController.setCenter(startPoint);
-                mapController.animateTo(startPoint);
+                mapController.setCenter(new GeoPoint(myLocation.getLatitude(), myLocation.getLongitude()));
+                mapController.animateTo(new GeoPoint(myLocation.getLatitude(), myLocation.getLongitude()));
                 mapController.setZoom(18);
 
             }
@@ -177,7 +185,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
             onAddressRecived(lat, lon);
         }
 
-         SensorListener mySensorEventListener = new SensorListener(){
+        SensorListener mySensorEventListener = new SensorListener() {
 
             @Override
             public void onSensorChanged(int sensor, float[] values) {
@@ -187,23 +195,21 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
                 }
             }
 
-             @Override
-             public void onAccuracyChanged(int i, int i1)
-             {
-                    myLocation.setAccuracy(i1);
-                 map.invalidate();
-             }
-         };
+            @Override
+            public void onAccuracyChanged(int i, int i1) {
+
+            }
+        };
+
         sensorManager.registerListener(mySensorEventListener,
                 SensorManager.SENSOR_ORIENTATION,
                 SensorManager.SENSOR_DELAY_UI);
 
 
-
     }
 
     private void setStartPoint(Location location) {
-        if(startPoint != null) {
+        if (startPoint != null) {
             map.getOverlays().remove(startPoint);
             waypoints.remove(startPoint);
         }
@@ -221,7 +227,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
 
     public void startLocationListener() {
         final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, this);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (lastKnownLocation == null) {
@@ -234,7 +240,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
         }
-            locationManager.removeUpdates(this);
+        locationManager.removeUpdates(this);
     }
 
     public void onAddressRecived(GeoPoint endPoint) {
@@ -266,27 +272,22 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu4, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id)
-        {
-            case R.id.night:
-            {
+        switch (id) {
+            case R.id.night: {
                 map.getOverlayManager().getTilesOverlay().setColorFilter(TilesOverlay.INVERT_COLORS);
                 map.invalidate();
                 break;
             }
-            case R.id.satelita:
-            {
-                if (!(map.getTileProvider() instanceof MapTileProviderBasic)){
+            case R.id.satelita: {
+                if (!(map.getTileProvider() instanceof MapTileProviderBasic)) {
                     MapTileProviderBasic bitmapProvider = new MapTileProviderBasic(this);
                     map.setTileProvider(bitmapProvider);
                 }
@@ -295,26 +296,22 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
                 map.invalidate();
                 break;
             }
-            case R.id.historia:
-            {
+            case R.id.historia: {
                 Intent goToIntent = new Intent(this, HistoryActivity.class);
                 startActivity(goToIntent);
                 break;
             }
-            case R.id.listOfRoadStep:
-            {
+            case R.id.listOfRoadStep: {
                 Intent goToIntent = new Intent(this, ItemRoadStepActivity.class);
                 startActivity(goToIntent);
                 break;
             }
-            case R.id.poi:
-            {
+            case R.id.poi: {
                 Intent goToIntent = new Intent(this, POIActivity.class);
                 startActivityForResult(goToIntent, REQUEST_POI);
                 break;
             }
-            case R.id.poi_menu:
-            {
+            case R.id.poi_menu: {
                 Intent goToIntent = new Intent(this, POIActivity.class);
                 startActivityForResult(goToIntent, REQUEST_POI);
                 break;
@@ -325,10 +322,10 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     }
 
     protected void fillNodeRoadInfo(int roadStep, RoadNode node) {
-        if(roadStep == 0) {
+        if (roadStep == 0) {
             nextNode = node;
         }
-        if(roadStep == 1) {
+        if (roadStep == 1) {
             previousNode = node;
         }
         listOfRoadNodes.add(node);
@@ -336,7 +333,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         Marker nodeMarker = new Marker(map);
         nodeMarker.setTitle(getString(R.string.step) + " " + (roadStep + 1));
         nodeMarker.setSnippet(instructions);
-        nodeMarker.setSubDescription(RoadDescription.getLenAndDurAsString(context, node.mLength, node.mDuration));
+        nodeMarker.setSubDescription(RoadDescription.getLenAndDurAsString(context, node.mLength, node.mDuration, true));
         nodeMarker.setPosition(node.mLocation);
         nodeMarker.setIcon(icon);
         nodeMarker.setInfoWindow(infoWindow);
@@ -345,8 +342,6 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         nodeMarker.setImage(directionIcon);
         mRoadNodeMarkers.add(nodeMarker);
     }
-
-    final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
 
     void checkPermissions() {
         List<String> permissions = new ArrayList<>();
@@ -368,17 +363,14 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == getRequestCode()) {
+        if (requestCode == getRequestCode()) {
             if (resultCode == RESULT_OK) {
                 lon = data.getDoubleExtra("lon", 0.0);
                 lat = data.getDoubleExtra("lat", 0.0);
                 onAddressRecived(lat, lon);
             }
-        }
-        else if(requestCode == REQUEST_POI)
-        {
-            if (resultCode == RESULT_OK)
-            {
+        } else if (requestCode == REQUEST_POI) {
+            if (resultCode == RESULT_OK) {
                 poi = data.getStringExtra("poi");
                 showPOIOnMap();
             }
@@ -387,7 +379,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
 
 
     private void addPositionMarker(GeoPoint center) {
-        if(positionMarker != null) {
+        if (positionMarker != null) {
             map.getOverlays().remove(positionMarker);
         }
         positionMarker = new Marker(map);
@@ -397,7 +389,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         map.getOverlays().add(positionMarker);
         mapController.setCenter(center);
         mapController.animateTo(center);
-     //   mapController.setZoom(16);
+        //   mapController.setZoom(16);
 
 //        if(nextNode != null && isNodesClose(center, nextNode.mLocation)) {
 //            int nextIndex = listOfRoadNodes.indexOf(nextNode);
@@ -412,16 +404,13 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
     }
 
     @Override
-    public void onLocationChanged(Location location)
-    {
-        if(location != null)
-        {
+    public void onLocationChanged(Location location) {
+        if (location != null) {
             myLocation = location;
             GeoPoint locationPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
 
 
-            if(roadPolyline!= null && roadPolyline.getPoints() != null && roadPolyline.getPoints().size() > 0 && !roadPolyline.isCloseTo(locationPoint, 200, map))
-            {
+            if (roadPolyline != null && roadPolyline.getPoints() != null && roadPolyline.getPoints().size() > 0 && !roadPolyline.isCloseTo(locationPoint, 200, map)) {
                 recalculateRoad();
             }
 
@@ -461,7 +450,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         double dLon = Math.abs(g1.getLongitude() - g2.getLongitude());
         double dLat = Math.abs(g1.getLatitude() - g2.getLatitude());
 
-        if(dLon < dMin && dLat < dMin) {
+        if (dLon < dMin && dLat < dMin) {
             return true;
         }
         return false;
@@ -475,7 +464,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
             toolbar.setVisibility(View.GONE);
             mapController.setCenter(startPoint);
 
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             toolbar.setVisibility(View.VISIBLE);
             mapController.setCenter(startPoint);
         }
@@ -487,8 +476,7 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         FolderOverlay poiMarkers = new FolderOverlay(context);
         map.getOverlays().add(poiMarkers);
         Drawable poiIcon = getResources().getDrawable(R.drawable.poismarkers);
-        for (POI poi:pois)
-        {
+        for (POI poi : pois) {
             Marker poiMarker = new Marker(map);
             poiMarker.setSnippet(poi.mDescription);
             poiMarker.setPosition(poi.mLocation);
@@ -498,34 +486,34 @@ public abstract class NavActivity extends AppCompatActivity  implements Location
         map.invalidate();
     }
 
-    private void calculateRoadInfo(Location location)
-    {
+    private void calculateRoadInfo(Location location) {
         currentLocation = location;
-        if(previousLocation == null) {
+        if (previousLocation == null) {
             previousLocation = currentLocation;
             return;
         }
         distance = previousLocation.distanceTo(currentLocation);
         time = (System.currentTimeMillis() - previousTime) / 1000f;
+
         previousTime = System.currentTimeMillis();
         previousLocation = currentLocation;
 
-        if(distance != 0) {
-            NavActivity.lengthOfRoad -= (distance/1000);
-            String lengthText = RoadDescription.getLenAndDurAsString(NavBikeActivity.context, NavActivity.lengthOfRoad, NavActivity.duration);
+        if (distance != 0) {
+            lengthOfRoad -= (distance / 1000);
+            duration -= 2.0;
+            String lengthAndDurationText = RoadDescription.getLenAndDurAsString(context, lengthOfRoad, duration, false);
             String speedText = "";
-            if(time > 0) {
-               // float speed = Math.round(distance / time * 3.6f * 10f) / 10f;
+            if (time > 0) {
+                // float speed = Math.round(distance / time * 3.6f * 10f) / 10f;
                 float locationSpeed = Math.round(currentLocation.getSpeed() * 3.6f * 10f) / 10f;
-                speedText =  String.valueOf(locationSpeed) + " km/h";
+                speedText = String.valueOf(locationSpeed) + " km/h";
                 //Toast.makeText(NavActivity.context, String.valueOf(time), Toast.LENGTH_LONG).show();
             }
 
-           // NavActivity.routeInfo.setTextColor(0xFF0000);
-            NavActivity.routeInfo.setText(lengthText + "\n                             " + speedText);
+            // NavActivity.routeInfo.setTextColor(0xFF0000);
+            routeInfo.setText(lengthAndDurationText + "\n                             " + speedText);
         }
     }
-
 
 
 }

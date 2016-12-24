@@ -1,7 +1,10 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.routing;
 
 import android.location.Location;
 import android.os.AsyncTask;
+
+import com.example.marcin.osmtest.location.NavActivity;
+import com.example.marcin.osmtest.location.NavBikeActivity;
 
 /**
  * Created by Marcin on 26.11.2016.
@@ -33,7 +36,7 @@ public class RoadInfoAsyncTask extends AsyncTask<Location,Float,Float>
     {
         if(result != null) {
             NavActivity.lengthOfRoad -= (result/1000);
-            String lengthText = RoadDescription.getLenAndDurAsString(NavBikeActivity.context, NavActivity.lengthOfRoad, NavActivity.duration);
+            String lengthText = RoadDescription.getLenAndDurAsString(NavBikeActivity.context, NavActivity.lengthOfRoad, NavActivity.duration, false);
             String speedText = "";
             if(time > 0) {
                 float speed = Math.round(distance / time * 3.6f * 10f) / 10f;

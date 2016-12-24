@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.activity;
 
 import android.Manifest;
 import android.content.Context;
@@ -18,6 +18,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.marcin.osmtest.BuildConfig;
+import com.example.marcin.osmtest.R;
+import com.example.marcin.osmtest.location.NavBikeActivity;
+import com.example.marcin.osmtest.location.NavCarActivity;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.location.NominatimPOIProvider;
 import org.osmdroid.bonuspack.location.POI;
@@ -30,8 +35,8 @@ import org.osmdroid.views.overlay.TilesOverlay;
 
 import java.util.ArrayList;
 
-import static com.example.marcin.osmtest.LocationHolder.location;
-import static com.example.marcin.osmtest.NavActivity.REQUEST_POI;
+import static com.example.marcin.osmtest.location.LocationHolder.location;
+import static com.example.marcin.osmtest.location.NavActivity.REQUEST_POI;
 
 public class MainActivity extends AppCompatActivity {
     MapView map;

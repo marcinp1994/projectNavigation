@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Marcin on 11.11.2016.
  */
 
- class HTTPConnectionToRemoteServer {
+public class HTTPConnectionToRemoteServer {
      static String responseFromOSRM;
      static String userAgent;
 

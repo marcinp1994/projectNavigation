@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.activity;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,9 +8,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.example.marcin.osmtest.R;
+import com.example.marcin.osmtest.utils.CustomListAdapter;
+
 import java.util.ArrayList;
 
-import static com.example.marcin.osmtest.NavActivity.listOfRoadNodes;
+import static com.example.marcin.osmtest.location.NavActivity.listOfRoadNodes;
 
 public class ItemRoadStepActivity extends AppCompatActivity
 {

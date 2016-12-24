@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -16,6 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.marcin.osmtest.R;
+import com.example.marcin.osmtest.location.LocationHolder;
+import com.example.marcin.osmtest.location.NavBikeActivity;
+import com.example.marcin.osmtest.location.NavCarActivity;
+import com.example.marcin.osmtest.routing.ResponseStatus;
+import com.example.marcin.osmtest.utils.HttpConnectionAsyncTask;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -27,17 +33,17 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
-import static com.example.marcin.osmtest.HTTPConnectionToRemoteServer.getStatusResponse;
-import static com.example.marcin.osmtest.NavActivity.REQUEST_CHECK_SETTINGS;
+import static com.example.marcin.osmtest.location.NavActivity.REQUEST_CHECK_SETTINGS;
+import static com.example.marcin.osmtest.utils.HTTPConnectionToRemoteServer.getStatusResponse;
 
 public class HomeActivity extends AppCompatActivity {
-    private static String OSRM_OR_MAPQUEST;
+    private static String OSRM_OR_MAPQUEST_OR_GRAPHOOPER;
     protected GoogleApiClient client;
     private int statusFromTest;
     LocationManager locationManager;
 
-    public static String getOsrmOrMapquest() {
-        return OSRM_OR_MAPQUEST;
+    public static String getOsrmOrMapquestOrGraphooper() {
+        return OSRM_OR_MAPQUEST_OR_GRAPHOOPER;
     }
 
     @Override
@@ -49,7 +55,7 @@ public class HomeActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        locationManager.requestLocationUpdates(locationProvider, 2000, 10, new LocationHolder());
+        locationManager.requestLocationUpdates(locationProvider, 0, 0, new LocationHolder());
         client = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .build();
@@ -64,9 +70,11 @@ public class HomeActivity extends AppCompatActivity {
         new HttpConnectionAsyncTask(testConnection).execute();
         statusFromTest = getStatusResponse();
         if (statusFromTest == ResponseStatus.OK.getValue()) {
-            OSRM_OR_MAPQUEST = "OSRM";
+            OSRM_OR_MAPQUEST_OR_GRAPHOOPER = "OSRM";
+        } else if (statusFromTest == ResponseStatus.TECHNICAL.getValue()) {
+            OSRM_OR_MAPQUEST_OR_GRAPHOOPER = "MAP_QUEST";
         } else {
-            OSRM_OR_MAPQUEST = "MAP_QUEST";
+            OSRM_OR_MAPQUEST_OR_GRAPHOOPER = "GRAP_HOOPER";
         }
     }
 

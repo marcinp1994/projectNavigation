@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +16,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.marcin.osmtest.R;
+import com.example.marcin.osmtest.database.AddressesDataSource;
+import com.example.marcin.osmtest.routing.AddressFromName;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.example.marcin.osmtest.NavBikeActivity.keyForMapQuest;
+import static com.example.marcin.osmtest.location.NavBikeActivity.keyForMapQuest;
 
 public class SearchActivity extends AppCompatActivity {
     EditText editText;

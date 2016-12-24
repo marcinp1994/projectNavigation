@@ -18,10 +18,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".HomeActivity"
+            android:name=".activity.HomeActivity"
             android:screenOrientation="nosensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,13 +30,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NavCarActivity"
+            android:name=".location.NavCarActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".NavBikeActivity"
+            android:name=".location.NavBikeActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".HistoryActivity"
+            android:name=".activity.HistoryActivity"
             android:configChanges="orientation|screenSize" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
@@ -47,13 +47,11 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".SearchActivity"
+            android:name=".activity.SearchActivity"
             android:configChanges="orientation|screenSize" />
-        <activity
-            android:name=".NavActivity"
-            android:configChanges="orientation|screenSize" />
-        <activity android:name=".ItemRoadStepActivity" />
-        <activity android:name=".POIActivity"></activity>
+
+        <activity android:name=".activity.ItemRoadStepActivity" />
+        <activity android:name=".activity.POIActivity"></activity>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.database;
 
 /**
  * Created by Marcin on 16.11.2016.

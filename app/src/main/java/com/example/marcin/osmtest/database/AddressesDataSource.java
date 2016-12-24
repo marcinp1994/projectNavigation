@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,14 +9,14 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.HashSet;
 import java.util.Set;
 
-class AddressesDataSource {
+public class AddressesDataSource {
 
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
             MySQLiteHelper.COLUMN_ADDRES, MySQLiteHelper.COLUMN_LATITUDE, MySQLiteHelper.COLUMN_LONGITUDE};
 
-    AddressesDataSource(Context context) {
+    public AddressesDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
     }
 
@@ -24,11 +24,11 @@ class AddressesDataSource {
         database = dbHelper.getWritableDatabase();
     }
 
-    void close() {
+    public void close() {
         dbHelper.close();
     }
 
-    DatabaseAddress createDatabaseAddress(String address, double latitude, double longitude) {
+    public DatabaseAddress createDatabaseAddress(String address, double latitude, double longitude) {
         ContentValues values = new ContentValues();
         if(verification(address))
         {
@@ -51,13 +51,13 @@ class AddressesDataSource {
         }
     }
 
-    void deleteAddressInDatabase(DatabaseAddress address) {
+    public void deleteAddressInDatabase(DatabaseAddress address) {
         long id = address.getId();
         database.delete(MySQLiteHelper.TABLE_ADDRESSES, MySQLiteHelper.COLUMN_ID
                 + " = " + id, null);
     }
 
-    Set<DatabaseAddress> getAllAddressesFromDatabase() {
+    public Set<DatabaseAddress> getAllAddressesFromDatabase() {
         Set<DatabaseAddress> addresses = new HashSet<>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_ADDRESSES,

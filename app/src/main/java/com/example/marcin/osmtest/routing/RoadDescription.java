@@ -1,8 +1,10 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.routing;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
+import com.example.marcin.osmtest.R;
 
 import org.osmdroid.bonuspack.routing.RoadLeg;
 import org.osmdroid.bonuspack.routing.RoadNode;
@@ -19,12 +21,12 @@ import java.util.HashMap;
  * ktora zawiera w sobie informacje drogowe na temat
  * dlugosci drogi, czasu przejazdu
  * */
- class RoadDescription
+public class RoadDescription
 {
-    int roadStatus;
-    double totalLengthOfRoad;
-    double totalDurationOfRoad;
-    ArrayList<RoadNode> allTurningPointsOfRoadPoints;
+    public int roadStatus;
+    public double totalLengthOfRoad;
+    public double totalDurationOfRoad;
+    public ArrayList<RoadNode> allTurningPointsOfRoadPoints;
     ArrayList<RoadLeg> legs;
     ArrayList<GeoPoint> routeHigh;
     ArrayList<GeoPoint> routeLow;
@@ -104,19 +106,19 @@ import java.util.HashMap;
         roadStatus = ResponseStatus.TECHNICAL.getValue();
     }
 
-     static String getLenAndDurAsString(Context context, double length, double duration) {
+    public static String getLenAndDurAsString(Context context, double length, double duration, boolean sec) {
         String lengthAndDurationAsString = null;
         if (length >= 100.0)
         {
-            lengthAndDurationAsString = "Długość: " + Math.round(length) + "km";
+            lengthAndDurationAsString = "Długość: " + Math.round(length) + "km   ";
         }
         else if (length >= 1.0)
         {
-            lengthAndDurationAsString = "Długość: " + Math.round(length*10)/10.0 + "km";
+            lengthAndDurationAsString = "Długość: " + Math.round(length * 10) / 10.0 + "km   ";
         }
         else
         {
-            lengthAndDurationAsString = "Długość: " + Math.round(length*1000) + "m";
+            lengthAndDurationAsString = "Długość: " + Math.round(length * 1000) + "m   ";
         }
         int totalTimeInSeconds = (int)duration;
         int hours = totalTimeInSeconds / 3600;
@@ -131,7 +133,7 @@ import java.util.HashMap;
         {
             lengthAndDurationAsString += minutes + "min ";
         }
-        if(seconds != 0)
+        if (seconds != 0 && sec)
         {
             lengthAndDurationAsString += seconds + "s ";
         }
@@ -139,7 +141,7 @@ import java.util.HashMap;
         return lengthAndDurationAsString;
     }
 
-     static Polyline buildRoadOverlay(RoadDescription road, int color, float width){
+    public static Polyline buildRoadOverlay(RoadDescription road, int color, float width) {
         Polyline roadOverlay = new Polyline();
         roadOverlay.setColor(color);
         roadOverlay.setWidth(width);

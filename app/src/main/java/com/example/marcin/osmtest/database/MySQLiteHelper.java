@@ -1,4 +1,4 @@
-package com.example.marcin.osmtest;
+package com.example.marcin.osmtest.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
